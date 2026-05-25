@@ -198,6 +198,8 @@ class HPRParser:
             real_estate_id_object = get_text(obj, 's:RealEstateIDObject')
             start_date_raw = get_text(obj, 's:StartDate')
             start_date = format_date(start_date_raw)
+            end_date_raw = get_text(obj, 's:EndDate')
+            end_date = format_date(end_date_raw)
             
             # Parse SubObject
             sub_object = obj.find('s:SubObject', self.ns)
@@ -219,6 +221,7 @@ class HPRParser:
                 'contract_number_category': contract_number_category,
                 'real_estate_id_object': real_estate_id_object,
                 'start_date': start_date,
+                'end_date': end_date,
                 'sub_object_key': sub_object_key,
                 'sub_object_user_id': sub_object_user_id_value,
                 'sub_object_user_id_agency': sub_object_user_id_agency,

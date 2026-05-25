@@ -354,13 +354,6 @@ def merge_pri_into_standardized(
     result["machine"] = _merge_first_row(result["machine"], pri_data.get("machine", pd.DataFrame()))
     result["objects"] = _merge_first_row(result["objects"], pri_data.get("objects", pd.DataFrame()))
 
-    for key in (
-        "buyer_vendor", "calibration", "apt_history", "price_matrices",
-        "operators", "production_statistics", "log_codes", "tree_codes", "additional_info"
-    ):
-        if key in pri_data:
-            result[key] = pri_data[key]
-
     if not pri_data.get("logs", pd.DataFrame()).empty:
         pri_logs = pri_data["logs"].copy()
         result["species_product_volume"] = _build_species_product_volume_from_pri_logs(

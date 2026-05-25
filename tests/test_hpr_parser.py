@@ -12,6 +12,7 @@ if str(project_root) not in sys.path:
 
 from s4d_tools.parsers.stanford_2010.hpr_parser import HPRParser
 from s4d_tools.parsers.stanford_2010.utils import get_text
+from s4d_tools.transformers.to_standardized import transform_hpr_to_standardized
 
 
 class TestHPRParser:
@@ -98,7 +99,7 @@ class TestHPRParser:
         
         # Check expected object columns
         expected_columns = [
-            'object_key', 'object_name', 'sub_object_key'
+            'object_key', 'object_name', 'start_date', 'end_date', 'sub_object_key'
         ]
         for col in expected_columns:
             assert col in objects_df.columns
@@ -107,7 +108,19 @@ class TestHPRParser:
         row = objects_df.iloc[0]
         assert row['object_key'] == 'TOY_SITE_01'
         assert row['object_name'] == 'Toy Forest Stand'
+        assert row['start_date'] == '01-06-2024 08:00'
+        assert row['end_date'] == '01-06-2024 16:00'
         assert row['sub_object_key'] == 'Sub_01'
+
+    def test_transform_hpr_to_standardized_includes_object_dates(self, sample_hpr_file):
+        parser = HPRParser(sample_hpr_file)
+        data = transform_hpr_to_standardized(parser.parse_all())
+
+        objects_df = data["objects"]
+        assert "start_date" in objects_df.columns
+        assert "end_date" in objects_df.columns
+        assert objects_df.iloc[0]["start_date"] == "01-06-2024 08:00"
+        assert objects_df.iloc[0]["end_date"] == "01-06-2024 16:00"
     
     def test_parse_stems(self, sample_hpr_file):
         parser = HPRParser(sample_hpr_file)

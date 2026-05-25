@@ -24,7 +24,9 @@ from s4d_tools.transformers import (
 from s4d_tools.transformers.standradized_schema import META_HAS_PRI, META_SOURCE_TYPE
 from s4d_tools.utils.sanitize_s4d2010 import sanitize_s4d2010_xml
 
-from chart_utils import assortment_breakdown_percent_chart
+from chart_utils import assortment_breakdown_percent_chart, productivity_rates
+
+DEMO_VIDEO_URL = "https://youtu.be/6R_mGvelb8Q"
 
 # Page configuration
 st.set_page_config(
@@ -34,8 +36,12 @@ st.set_page_config(
 )
 
 st.title("🌲 Harvesteri Failide Analüüs")
-tab_visualize, tab_redact = st.tabs(
-    ["📊 Andmete visualiseerimine", "🔒 Tundlike andmete asendamine (GDPR)"]
+tab_visualize, tab_redact, tab_demo = st.tabs(
+    [
+        "📊 Andmete visualiseerimine",
+        "🔒 Tundlike andmete asendamine (GDPR)",
+        "🎬 Rakenduse demo",
+    ]
 )
 
 def _standardized_source_label_et(source_type: str) -> str:
@@ -133,8 +139,6 @@ def _render_price_matrix_tab_et(data: dict) -> None:
         return
 
     st.metric("Maatriksi ridu (lahtrid)", f"{len(pm):,}")
-    st.subheader("Pikk tabel")
-    st.dataframe(pm, use_container_width=True, height=360)
 
     try:
         heatmaps = price_matrix_heatmaps_by_assortment(pm)
@@ -191,8 +195,6 @@ def visualize_data(
             "📏 Palgid",
         ]
     )
-    if has_pri:
-        tab_names.append("📋 Lisainfo")
 
     tabs = st.tabs(tab_names)
     it = iter(tabs)
@@ -205,7 +207,8 @@ def visualize_data(
     tab6 = next(it)
     tab_stems = next(it)
     tab_logs = next(it)
-    tab_additional = next(it) if has_pri else None
+
+    m3_per_hour, stems_per_hour = productivity_rates(data)
     
     # TAB 1: Overview
     with tab1:
@@ -240,6 +243,15 @@ def visualize_data(
         if 'objects' in data and not data['objects'].empty:
             site_name = data['objects'].iloc[0].get('object_name', 'N/A')
             col4.metric("Objekti nimi", site_name)
+
+        if m3_per_hour is not None or stems_per_hour is not None:
+            prod_col1, prod_col2 = st.columns(2)
+            with prod_col1:
+                if m3_per_hour is not None:
+                    st.metric("m³/h", f"{m3_per_hour:,.2f}")
+            with prod_col2:
+                if stems_per_hour is not None:
+                    st.metric("puid/h", f"{stems_per_hour:,.1f}")
         
         # Statistics summary
         if 'statistics' in data and not data['statistics'].empty:
@@ -278,15 +290,6 @@ def visualize_data(
                 obj = data['objects'].iloc[0]
                 st.write(f"**Objekti nimi:** {obj.get('object_name', 'N/A')}")
                 st.write(f"**Lepingu number:** {obj.get('contract_number', 'N/A')}")
-        
-        # Display DataFrames
-        if 'header' in data:
-            st.subheader("Header DataFrame")
-            st.dataframe(data['header'], use_container_width=True)
-        
-        if 'objects' in data:
-            st.subheader("Objects DataFrame")
-            st.dataframe(data['objects'], use_container_width=True)
     
     # TAB 3: Species
     with tab3:
@@ -317,10 +320,16 @@ def visualize_data(
         if has_statistics:
             stats = data["statistics"].iloc[0]
 
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
 
             with col1:
                 st.metric("Kokku puid", stats.get("total_stems", 0))
+            with col2:
+                if m3_per_hour is not None:
+                    st.metric("m³/h", f"{m3_per_hour:,.2f}")
+            with col3:
+                if stems_per_hour is not None:
+                    st.metric("puid/h", f"{stems_per_hour:,.1f}")
 
             # Stems per species chart
             if "species_names" in stats and "stems_per_species" in stats:
@@ -345,30 +354,6 @@ def visualize_data(
                         }
                     )
                     st.bar_chart(species_chart_df.set_index("Liik"))
-
-            # Volume per species chart
-            if "species_names" in stats and "volume_per_species" in stats:
-                species_names = (
-                    stats["species_names"]
-                    if isinstance(stats["species_names"], list)
-                    else []
-                )
-                volume_per_species = (
-                    stats["volume_per_species"]
-                    if isinstance(stats["volume_per_species"], list)
-                    else []
-                )
-
-                min_length = min(len(species_names), len(volume_per_species))
-                if min_length > 0:
-                    st.subheader("Maht liigiti (m³)")
-                    volume_chart_df = pd.DataFrame(
-                        {
-                            "Liik": species_names[:min_length],
-                            "Maht": volume_per_species[:min_length],
-                        }
-                    )
-                    st.bar_chart(volume_chart_df.set_index("Liik"))
 
         sp_from_transformer = data.get("species_product_volume", pd.DataFrame())
         if sp_from_transformer is not None and not sp_from_transformer.empty:
@@ -409,10 +394,7 @@ def visualize_data(
                     use_container_width=True,
                 )
 
-        if has_statistics:
-            st.subheader("Statistika DataFrame")
-            st.dataframe(data["statistics"], use_container_width=True)
-        elif not showed_assortment_breakdown:
+        if not has_statistics and not showed_assortment_breakdown:
             st.info("Statistika andmed puuduvad.")
 
     if has_apt and tab_price is not None:
@@ -480,93 +462,6 @@ def visualize_data(
                     _render_pri_style_logs_table_et(logs_pri_only)
                 else:
                     _render_generic_logs_table_et(logs_pri_only)
-
-    # PRI: ainult Lisainfo (ostjad/müüjad, kalibreerimine, tootmise statistika, operaatorid eemaldatud)
-    if has_pri:
-        if tab_additional is not None and 'additional_info' in data:
-            with tab_additional:
-                st.header("Lisainfo")
-                if not data['additional_info'].empty:
-                    add_info = data['additional_info'].iloc[0]
-                    
-                    st.subheader("Koordinaadid")
-                    coord_system_map = {'1': 'WGS84', '': 'N/A'}
-                    coord_type_map = {'1': 'Suhtelised koordinaadid', '2': 'Absoluutsed koordinaadid', '': 'N/A'}
-                    coord_ref_map = {'1': 'Masina baaspositsioon', '2': 'Kraana ots fellingu ajal', '3': 'Kraana ots töötlemise ajal', '': 'N/A'}
-                    lat_dir_map = {'1': 'Põhi', '2': 'Lõuna', '': 'N/A'}
-                    lon_dir_map = {'1': 'Ida', '2': 'Lääs', '': 'N/A'}
-                    
-                    st.write(f"**Registreerimise positsioon:** {coord_ref_map.get(str(add_info.get('coord_ref_position', '')), 'N/A')}")
-                    st.write(f"**Koordinaatide tüüp:** {coord_type_map.get(str(add_info.get('coord_type', '')), 'N/A')}")
-                    st.write(f"**Koordinaatide süsteem:** {coord_system_map.get(str(add_info.get('coord_system', '')), 'N/A')}")
-                    
-                    coord_lat = add_info.get('coord_start_latitude', '')
-                    coord_lat_dir = add_info.get('coord_start_lat_direction', '')
-                    coord_lon = add_info.get('coord_start_longitude', '')
-                    coord_lon_dir = add_info.get('coord_start_lon_direction', '')
-                    coord_alt = add_info.get('coord_start_altitude_m', '')
-                    coord_dt = add_info.get('coord_start_datetime', '')
-                    
-                    if coord_lat:
-                        lat_dir_str = lat_dir_map.get(str(coord_lat_dir), '')
-                        st.write(f"**Algne laiuskraad:** {coord_lat} ({lat_dir_str})")
-                    if coord_lon:
-                        lon_dir_str = lon_dir_map.get(str(coord_lon_dir), '')
-                        st.write(f"**Algne pikkuskraad:** {coord_lon} ({lon_dir_str})")
-                    if coord_alt:
-                        st.write(f"**Kõrgus merepinnast:** {coord_alt} m")
-                    if coord_dt:
-                        st.write(f"**Registreerimise kuupäev/aeg:** {coord_dt}")
-                    
-                    st.subheader("DBH andmed")
-                    dbh_heights = add_info.get('dbh_height_cm', [])
-                    dbh_distances = add_info.get('dbh_derivation_distance_cm', [])
-                    if dbh_heights:
-                        st.write(f"**DBH kõrgused (cm):** {dbh_heights}")
-                    if dbh_distances:
-                        st.write(f"**DBH tuletamise kaugus (cm):** {dbh_distances}")
-                    
-                    st.subheader("Metsa vanus")
-                    stand_age_mean = add_info.get('stand_age_mean_years', '')
-                    stand_age_std = add_info.get('stand_age_std_dev_years', '')
-                    if stand_age_mean:
-                        st.write(f"**Keskmine vanus:** {stand_age_mean} aastat")
-                    if stand_age_std:
-                        st.write(f"**Standardhälve:** {stand_age_std} aastat")
-                    
-                    st.subheader("Apteri tarkvara")
-                    apteri_text = add_info.get('apteri_text', '')
-                    apteri_dt = add_info.get('apteri_datetime', '')
-                    if apteri_text:
-                        st.write(f"**Tekst:** {apteri_text}")
-                    if apteri_dt:
-                        st.write(f"**Kuupäev/aeg:** {apteri_dt}")
-                    
-                    st.subheader("Valikuline tekst")
-                    st.write(f"**Masinale:** {add_info.get('optional_text_to_machine', 'N/A')}")
-                    st.write(f"**Masinast:** {add_info.get('optional_text_from_machine', 'N/A')}")
-                    
-                    # Show other PRI data sections
-                    if 'apt_history' in data and not data['apt_history'].empty:
-                        st.subheader("APT faili ajalugu")
-                        st.dataframe(data['apt_history'], use_container_width=True)
-                    
-                    if 'price_matrices' in data and not data['price_matrices'].empty:
-                        st.subheader("Hindamismaatriksid")
-                        st.dataframe(data['price_matrices'], use_container_width=True)
-                    
-                    if 'log_codes' in data and not data['log_codes'].empty:
-                        st.subheader("Palgi koodid")
-                        st.dataframe(data['log_codes'], use_container_width=True)
-                    
-                    if 'tree_codes' in data and not data['tree_codes'].empty:
-                        st.subheader("Puu koodid")
-                        st.dataframe(data['tree_codes'], use_container_width=True)
-                    
-                    st.subheader("Additional Info DataFrame")
-                    st.dataframe(data['additional_info'], use_container_width=True)
-                else:
-                    st.info("Lisainfo andmed puuduvad.")
 
 with tab_visualize:
     st.write("Lae üles oma .prd või .hpr failid, et näha statistikat ja analüüsi.")
@@ -723,3 +618,7 @@ with tab_redact:
             )
         except ValueError as err:
             st.error(str(err))
+
+with tab_demo:
+    st.header("Rakenduse demo")
+    st.video(DEMO_VIDEO_URL)

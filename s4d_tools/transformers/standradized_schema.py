@@ -20,6 +20,8 @@ STANDARDIZED_MACHINE_COLUMNS = [
 STANDARDIZED_OBJECTS_COLUMNS = [
     "object_name",
     "contract_number",
+    "start_date",
+    "end_date",
 ]
 
 STANDARDIZED_SPECIES_GROUPS_COLUMNS = [

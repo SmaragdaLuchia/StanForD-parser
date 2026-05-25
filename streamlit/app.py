@@ -26,7 +26,9 @@ from s4d_tools.transformers import (
 from s4d_tools.transformers.standradized_schema import META_HAS_PRI, META_SOURCE_TYPE
 from s4d_tools.utils.sanitize_s4d2010 import sanitize_s4d2010_xml
 
-from chart_utils import assortment_breakdown_percent_chart
+from chart_utils import assortment_breakdown_percent_chart, productivity_rates
+
+DEMO_VIDEO_URL = "https://youtu.be/6R_mGvelb8Q"
 
 
 def _split_apt_pin_uploads(
@@ -66,7 +68,9 @@ st.set_page_config(
 
 # Title and top-level mode (visualize vs redact)
 st.title("🌲 Harvester File Analysis")
-tab_visualize, tab_redact = st.tabs(["📊 Data visualization", "🔒 Data redaction (GDPR)"])
+tab_visualize, tab_redact, tab_demo = st.tabs(
+    ["📊 Data visualization", "🔒 Data redaction (GDPR)", "🎬 Application demo"]
+)
 
 def _standardized_source_label(source_type: str) -> str:
     """Human-readable label for META_SOURCE_TYPE."""
@@ -170,10 +174,6 @@ def _render_price_matrix_tab(data: dict) -> None:
         )
         return
 
-    st.metric("Matrix rows (cells)", f"{len(pm):,}")
-    st.subheader("Long-form table")
-    st.dataframe(pm, use_container_width=True, height=360)
-
     try:
         heatmaps = price_matrix_heatmaps_by_assortment(pm)
     except Exception as e:
@@ -230,8 +230,6 @@ def visualize_data(
             "📏 Logs",
         ]
     )
-    if has_pri:
-        tab_names.append("📋 Additional Info")
 
     tabs = st.tabs(tab_names)
     it = iter(tabs)
@@ -244,7 +242,8 @@ def visualize_data(
     tab6 = next(it)
     tab_stems = next(it)
     tab_logs = next(it)
-    tab_additional = next(it) if has_pri else None
+
+    m3_per_hour, stems_per_hour = productivity_rates(data)
     
     # TAB 1: Overview
     with tab1:
@@ -279,6 +278,15 @@ def visualize_data(
         if 'objects' in data and not data['objects'].empty:
             site_name = data['objects'].iloc[0].get('object_name', 'N/A')
             col4.metric("Object Name", site_name)
+
+        if m3_per_hour is not None or stems_per_hour is not None:
+            prod_col1, prod_col2 = st.columns(2)
+            with prod_col1:
+                if m3_per_hour is not None:
+                    st.metric("m³/h", f"{m3_per_hour:,.2f}")
+            with prod_col2:
+                if stems_per_hour is not None:
+                    st.metric("stems/h", f"{stems_per_hour:,.1f}")
         
         # Statistics summary
         if 'statistics' in data and not data['statistics'].empty:
@@ -324,15 +332,6 @@ def visualize_data(
                 obj = data['objects'].iloc[0]
                 st.write(f"**Object Name:** {obj.get('object_name', 'N/A')}")
                 st.write(f"**Contract Number:** {obj.get('contract_number', 'N/A')}")
-        
-        # Display DataFrames
-        if 'header' in data:
-            st.subheader("Header DataFrame")
-            st.dataframe(data['header'], use_container_width=True)
-        
-        if 'objects' in data:
-            st.subheader("Objects DataFrame")
-            st.dataframe(data['objects'], use_container_width=True)
     
     # TAB 3: Species
     with tab3:
@@ -363,10 +362,16 @@ def visualize_data(
         if has_statistics:
             stats = data["statistics"].iloc[0]
 
-            col1, col2 = st.columns(2)
+            col1, col2, col3 = st.columns(3)
 
             with col1:
                 st.metric("Total Trees", stats.get("total_stems", 0))
+            with col2:
+                if m3_per_hour is not None:
+                    st.metric("m³/h", f"{m3_per_hour:,.2f}")
+            with col3:
+                if stems_per_hour is not None:
+                    st.metric("stems/h", f"{stems_per_hour:,.1f}")
 
             # Stems per species chart
             if "species_names" in stats and "stems_per_species" in stats:
@@ -398,30 +403,6 @@ def visualize_data(
                             }
                         )
                     st.bar_chart(species_chart_df.set_index("Species"))
-
-            # Volume per species chart
-            if "species_names" in stats and "volume_per_species" in stats:
-                species_names = (
-                    stats["species_names"]
-                    if isinstance(stats["species_names"], list)
-                    else []
-                )
-                volume_per_species = (
-                    stats["volume_per_species"]
-                    if isinstance(stats["volume_per_species"], list)
-                    else []
-                )
-
-                min_length = min(len(species_names), len(volume_per_species))
-                if min_length > 0:
-                    st.subheader("Volume by Species (cubic meters)")
-                    volume_chart_df = pd.DataFrame(
-                        {
-                            "Species": species_names[:min_length],
-                            "Volume": volume_per_species[:min_length],
-                        }
-                    )
-                    st.bar_chart(volume_chart_df.set_index("Species"))
 
         sp_from_transformer = data.get("species_product_volume", pd.DataFrame())
         if sp_from_transformer is not None and not sp_from_transformer.empty:
@@ -462,10 +443,7 @@ def visualize_data(
                     use_container_width=True,
                 )
 
-        if has_statistics:
-            st.subheader("Statistics DataFrame")
-            st.dataframe(data["statistics"], use_container_width=True)
-        elif not showed_assortment_breakdown:
+        if not has_statistics and not showed_assortment_breakdown:
             st.info("Statistics data is missing.")
 
     if has_price_matrix and tab_price is not None:
@@ -535,93 +513,6 @@ def visualize_data(
                     _render_pri_style_logs_table(logs_pri_only)
                 else:
                     _render_generic_logs_table(logs_pri_only)
-
-    # PRI: Additional Info only (buyers/vendors, calibration, production stats, operators removed)
-    if has_pri:
-        if tab_additional is not None and 'additional_info' in data:
-            with tab_additional:
-                st.header("Additional Info")
-                if not data['additional_info'].empty:
-                    add_info = data['additional_info'].iloc[0]
-                    
-                    st.subheader("Coordinates")
-                    coord_system_map = {'1': 'WGS84', '': 'N/A'}
-                    coord_type_map = {'1': 'Relative coordinates', '2': 'Absolute coordinates', '': 'N/A'}
-                    coord_ref_map = {'1': 'Base machine position', '2': 'Crane tip when felling', '3': 'Crane tip when processing', '': 'N/A'}
-                    lat_dir_map = {'1': 'North', '2': 'South', '': 'N/A'}
-                    lon_dir_map = {'1': 'East', '2': 'West', '': 'N/A'}
-                    
-                    st.write(f"**Registration Position:** {coord_ref_map.get(str(add_info.get('coord_ref_position', '')), 'N/A')}")
-                    st.write(f"**Coordinate Type:** {coord_type_map.get(str(add_info.get('coord_type', '')), 'N/A')}")
-                    st.write(f"**Coordinate System:** {coord_system_map.get(str(add_info.get('coord_system', '')), 'N/A')}")
-                    
-                    coord_lat = add_info.get('coord_start_latitude', '')
-                    coord_lat_dir = add_info.get('coord_start_lat_direction', '')
-                    coord_lon = add_info.get('coord_start_longitude', '')
-                    coord_lon_dir = add_info.get('coord_start_lon_direction', '')
-                    coord_alt = add_info.get('coord_start_altitude_m', '')
-                    coord_dt = add_info.get('coord_start_datetime', '')
-                    
-                    if coord_lat:
-                        lat_dir_str = lat_dir_map.get(str(coord_lat_dir), '')
-                        st.write(f"**Starting Latitude:** {coord_lat} ({lat_dir_str})")
-                    if coord_lon:
-                        lon_dir_str = lon_dir_map.get(str(coord_lon_dir), '')
-                        st.write(f"**Starting Longitude:** {coord_lon} ({lon_dir_str})")
-                    if coord_alt:
-                        st.write(f"**Altitude above Sea Level:** {coord_alt} m")
-                    if coord_dt:
-                        st.write(f"**Registration Date/Time:** {coord_dt}")
-                    
-                    st.subheader("DBH Data")
-                    dbh_heights = add_info.get('dbh_height_cm', [])
-                    dbh_distances = add_info.get('dbh_derivation_distance_cm', [])
-                    if dbh_heights:
-                        st.write(f"**DBH Heights (cm):** {dbh_heights}")
-                    if dbh_distances:
-                        st.write(f"**DBH Derivation Distance (cm):** {dbh_distances}")
-                    
-                    st.subheader("Stand Age")
-                    stand_age_mean = add_info.get('stand_age_mean_years', '')
-                    stand_age_std = add_info.get('stand_age_std_dev_years', '')
-                    if stand_age_mean:
-                        st.write(f"**Mean Age:** {stand_age_mean} years")
-                    if stand_age_std:
-                        st.write(f"**Standard Deviation:** {stand_age_std} years")
-                    
-                    st.subheader("Apteri Software")
-                    apteri_text = add_info.get('apteri_text', '')
-                    apteri_dt = add_info.get('apteri_datetime', '')
-                    if apteri_text:
-                        st.write(f"**Text:** {apteri_text}")
-                    if apteri_dt:
-                        st.write(f"**Date/Time:** {apteri_dt}")
-                    
-                    st.subheader("Optional Text")
-                    st.write(f"**To Machine:** {add_info.get('optional_text_to_machine', 'N/A')}")
-                    st.write(f"**From Machine:** {add_info.get('optional_text_from_machine', 'N/A')}")
-                    
-                    # Show other PRI data sections
-                    if 'apt_history' in data and not data['apt_history'].empty:
-                        st.subheader("APT File History")
-                        st.dataframe(data['apt_history'], use_container_width=True)
-                    
-                    if 'price_matrices' in data and not data['price_matrices'].empty:
-                        st.subheader("Price Matrices")
-                        st.dataframe(data['price_matrices'], use_container_width=True)
-                    
-                    if 'log_codes' in data and not data['log_codes'].empty:
-                        st.subheader("Log Codes")
-                        st.dataframe(data['log_codes'], use_container_width=True)
-                    
-                    if 'tree_codes' in data and not data['tree_codes'].empty:
-                        st.subheader("Tree Codes")
-                        st.dataframe(data['tree_codes'], use_container_width=True)
-                    
-                    st.subheader("Additional Info DataFrame")
-                    st.dataframe(data['additional_info'], use_container_width=True)
-                else:
-                    st.info("Additional info data is missing.")
 
 with tab_visualize:
     st.write("Upload your .prd or .hpr files to view statistics and analysis.")
@@ -814,3 +705,7 @@ with tab_redact:
             )
         except ValueError as err:
             st.error(str(err))
+
+with tab_demo:
+    st.header("Application demo")
+    st.video(DEMO_VIDEO_URL)

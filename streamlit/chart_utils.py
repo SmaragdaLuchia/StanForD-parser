@@ -1,11 +1,44 @@
 from __future__ import annotations
 
-from typing import Optional
+from datetime import datetime
+from typing import Optional, Tuple
 
 import altair as alt
 import pandas as pd
 
 from s4d_tools.aggregators.species_product import pivot_volume_to_percent_long
+
+
+def productivity_rates(data: dict) -> Tuple[Optional[float], Optional[float]]:
+    """Return (m3_per_hour, stems_per_hour) from object work period and totals."""
+    objects = data.get("objects", pd.DataFrame())
+    statistics = data.get("statistics", pd.DataFrame())
+    species_table = data.get("species_table", pd.DataFrame())
+
+    if objects.empty or statistics.empty:
+        return None, None
+
+    obj = objects.iloc[0]
+    try:
+        start = datetime.strptime(str(obj.get("start_date", "")).strip(), "%d-%m-%Y %H:%M")
+        end = datetime.strptime(str(obj.get("end_date", "")).strip(), "%d-%m-%Y %H:%M")
+        hours = (end - start).total_seconds() / 3600.0
+    except ValueError:
+        return None, None
+
+    if hours <= 0:
+        return None, None
+
+    total_stems = statistics.iloc[0].get("total_stems", 0)
+    stems_per_hour = int(total_stems) / hours
+
+    m3_per_hour = None
+    if not species_table.empty and "volume_m3" in species_table.columns:
+        total_volume = pd.to_numeric(species_table["volume_m3"], errors="coerce").fillna(0).sum()
+        if total_volume > 0:
+            m3_per_hour = total_volume / hours
+
+    return m3_per_hour, stems_per_hour
 
 
 def assortment_breakdown_percent_chart(
