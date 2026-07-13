@@ -27,9 +27,9 @@ class TestHPRParser:
     
     def test_parse_all(self, sample_hpr_file):
         parser = HPRParser(sample_hpr_file)
-        data = parser.parse_all()
-        
-        # Check that parse_all returns a dictionary with expected keys
+        data = parser.parse()
+
+        # Check that parse returns a dictionary with expected keys
         assert isinstance(data, dict)
         expected_keys = ['header', 'machine', 'species_groups', 'products', 'objects', 'stems', 'logs']
         for key in expected_keys:
@@ -114,7 +114,7 @@ class TestHPRParser:
 
     def test_transform_hpr_to_standardized_includes_object_dates(self, sample_hpr_file):
         parser = HPRParser(sample_hpr_file)
-        data = transform_hpr_to_standardized(parser.parse_all())
+        data = transform_hpr_to_standardized(parser.parse())
 
         objects_df = data["objects"]
         assert "start_date" in objects_df.columns

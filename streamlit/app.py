@@ -606,7 +606,7 @@ with tab_visualize:
             with st.spinner(f"Parsing {file_extension.upper()} file..."):
                 if file_type == "hpr":
                     data = transform_hpr_to_standardized(
-                        HPRParser(temp_file).parse_all(),
+                        HPRParser(temp_file).parse(),
                         apt_parse_result=apt_parse_result,
                     )
                 else:
@@ -623,7 +623,7 @@ with tab_visualize:
                     )
                 else:
                     with st.spinner("Parsing PIN file (product / price matrix)..."):
-                        data = merge_pin_into_standardized(data, PINParser(temp_pin_file).parse_all())
+                        data = merge_pin_into_standardized(data, PINParser(temp_pin_file).parse())
 
             # Parse PRI file if provided
             has_pri = False

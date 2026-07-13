@@ -146,7 +146,7 @@ class PINParser:
 
         return pd.DataFrame(price_matrix_data)
 
-    def parse_all(self):
+    def parse(self):
         """
         Parses the file and returns a dictionary containing DataFrames:
         'products' and 'price_matrices'.

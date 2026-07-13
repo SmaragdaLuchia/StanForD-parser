@@ -493,7 +493,7 @@ class PRIParser:
 
     def parse(self):
         self._load_raw_data()
-        
+
         return {
             'header': self._parse_header(),
             'machine': self._parse_machine(),

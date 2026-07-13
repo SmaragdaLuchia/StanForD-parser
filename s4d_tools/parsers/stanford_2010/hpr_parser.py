@@ -394,12 +394,12 @@ class HPRParser:
         
         return pd.DataFrame(logs_data)
 
-    def parse_all(self):
+    def parse(self):
         """
         Parses the file and returns a dictionary containing DataFrames:
         'header', 'machine', 'species_groups', 'products', 'objects', 'stems', 'logs'.
         """
-        return {   
+        return {
             'header': self._parse_header(),
             'machine': self._parse_machine(),
             'species_groups': self._parse_species_groups(),
@@ -412,10 +412,10 @@ class HPRParser:
     def visualize(self, data=None):
         """
         Simple visualization: prints out the parsed data.
-        If data is None, calls parse_all() first.
+        If data is None, calls parse() first.
         """
         if data is None:
-            data = self.parse_all()
+            data = self.parse()
         
         print("=" * 80)
         print("PARSED DATA VISUALIZATION")
@@ -434,6 +434,6 @@ class HPRParser:
 
 class PINParser:
     """Parses Product Instructions (XML)"""
-    def parse(self, file):
+    def parse(self):
         # Logic to read <ProductDefinition>, <Species>, etc.
         pass

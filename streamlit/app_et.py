@@ -533,7 +533,7 @@ with tab_visualize:
             with st.spinner(f"Parsin {file_extension.upper()} faili..."):
                 if file_type == "hpr":
                     data = transform_hpr_to_standardized(
-                        HPRParser(temp_file).parse_all(),
+                        HPRParser(temp_file).parse(),
                         apt_parse_result=apt_parse_result,
                     )
                 else:
