@@ -1,0 +1,102 @@
+@import "@fontsource-variable/inter";
+@import "@fontsource/jetbrains-mono/400.css";
+@import "@fontsource/jetbrains-mono/500.css";
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/*
+ * Design system tokens (mirrored in tailwind.config.js).
+ * Kept as CSS variables so non-Tailwind consumers (raw SVG, markdown
+ * snippets) can reference the same palette.
+ */
+:root {
+  --color-alabaster: #fafafa;
+  --color-gunmetal: #2b343a;
+  --color-pine: #4a7c59;
+  --color-pine-dark: #3e6b4c;
+  --color-surface: #eaecee;
+  --color-muted: #55636c;
+  --color-edge: #d9dee2;
+}
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 5rem; /* keep anchored headings clear of sticky header */
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    html {
+      scroll-behavior: auto;
+    }
+  }
+
+  body {
+    @apply bg-alabaster font-sans text-gunmetal antialiased;
+  }
+
+  ::selection {
+    background-color: #cfe0d5;
+  }
+
+  /* Single, consistent focus treatment for every interactive element. */
+  :focus-visible {
+    outline: 2px solid var(--color-pine);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-semibold tracking-tight text-gunmetal;
+  }
+}
+
+@layer components {
+  /* Long-form documentation prose */
+  .prose-doc h1 {
+    @apply mb-4 mt-2 text-3xl;
+  }
+  .prose-doc h2 {
+    @apply mb-3 mt-12 border-b border-edge pb-2 text-xl;
+  }
+  .prose-doc h3 {
+    @apply mb-2 mt-8 text-base;
+  }
+  .prose-doc p {
+    @apply mb-4 leading-7;
+  }
+  .prose-doc ul {
+    @apply mb-4 list-disc space-y-1 pl-6 leading-7;
+  }
+  .prose-doc ol {
+    @apply mb-4 list-decimal space-y-1 pl-6 leading-7;
+  }
+  .prose-doc a {
+    @apply font-medium text-pine underline decoration-pine/40 underline-offset-2 hover:decoration-pine;
+  }
+  .prose-doc code:not(pre code) {
+    @apply rounded bg-surface px-1.5 py-0.5 font-mono text-[0.85em] text-gunmetal;
+  }
+
+  /* Data tables */
+  .table-doc {
+    @apply w-full border-collapse text-left text-sm;
+  }
+  .table-doc caption {
+    @apply sr-only;
+  }
+  .table-doc th {
+    @apply border-b-2 border-edge bg-surface px-3 py-2 text-xs font-semibold uppercase tracking-wide text-muted;
+  }
+  .table-doc td {
+    @apply border-b border-edge px-3 py-2 align-top;
+  }
+  .table-doc tbody tr:last-child td {
+    @apply border-b-0;
+  }
+}

@@ -1,13 +1,11 @@
-name: Docs (GitHub Pages)
+name: Docs site (GitHub Pages)
 
 on:
   push:
     branches: [main]
     paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - "requirements-docs.txt"
-      - ".github/workflows/docs-pages.yml"
+      - "docs-site/**"
+      - ".github/workflows/deploy-docs-site.yml"
   workflow_dispatch:
 
 permissions:
@@ -22,24 +20,28 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: docs-site
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-node@v4
         with:
-          python-version: "3.11"
+          node-version: "20"
+          cache: "npm"
+          cache-dependency-path: docs-site/package-lock.json
 
-      - name: Install MkDocs
-        run: |
-          python -m pip install --upgrade pip
-          pip install -r requirements-docs.txt
+      - name: Install dependencies
+        run: npm ci
 
       - name: Build site
-        run: mkdocs build --strict
+        run: npm run build
 
+      # path is relative to the repo root, not the working-directory above
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: site
+          path: docs-site/dist
 
   deploy:
     needs: build
