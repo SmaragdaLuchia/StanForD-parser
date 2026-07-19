@@ -99,7 +99,7 @@ class PINParser:
 
         return pd.DataFrame(products_data)
 
-    def _parse_price_matrices(self):
+    def _parse_price_matrix(self):
         price_matrix_data = []
         products = self.root.findall('.//s:ProductDefinition', self.ns)
 
@@ -149,9 +149,9 @@ class PINParser:
     def parse(self):
         """
         Parses the file and returns a dictionary containing DataFrames:
-        'products' and 'price_matrices'.
+        'products' and 'price_matrix'.
         """
         return {
             'products': self._parse_products(),
-            'price_matrices': self._parse_price_matrices()
+            'price_matrix': self._parse_price_matrix()
         }

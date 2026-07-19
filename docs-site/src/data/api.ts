@@ -71,7 +71,7 @@ export const API: ApiModule[] = [
             params: [],
             returns: {
               type: "dict[str, pd.DataFrame]",
-              description: 'Keys: "products", "price_matrices".',
+              description: 'Keys: "products", "price_matrix".',
             },
           },
         ],
@@ -113,7 +113,7 @@ export const API: ApiModule[] = [
             returns: {
               type: "dict[str, pd.DataFrame]",
               description:
-                'Keys include "header", "machine", "objects", "buyer_vendor", "calibration", "apt_history", "species_groups", "products", "price_matrices", "operators", "production_statistics", "log_codes", "tree_codes", "additional_info", "logs".',
+                'Keys include "header", "machine", "objects", "buyer_vendor", "calibration", "apt_history", "species_groups", "products", "price_matrix", "operators", "production_statistics", "log_codes", "tree_codes", "additional_info", "logs".',
             },
           },
         ],
@@ -174,7 +174,7 @@ export const API: ApiModule[] = [
         name: "transform_* functions",
         module: "s4d_tools.transformers",
         summary:
-          'Build a standardized report from one primary source. The standardized report is a dict of DataFrames with fixed column sets — keys "header", "machine", "objects", "species_groups", "products", "statistics", "species_table", "species_product_volume", "stems", "logs", "pricing_matrix" — plus the metadata keys "source_type" and "has_pri". It is the only shape the UI layer consumes.',
+          'Build a standardized report from one primary source. The standardized report is a dict of DataFrames with fixed column sets — keys "header", "machine", "objects", "species_groups", "products", "statistics", "species_table", "species_product_volume", "stems", "logs", "price_matrix" — plus the metadata keys "source_type" and "has_pri". It is the only shape the UI layer consumes.',
         methods: [
           {
             name: "transform_hpr_to_standardized",
@@ -192,7 +192,7 @@ export const API: ApiModule[] = [
                 name: "apt_parse_result",
                 type: "dict | pd.DataFrame | None",
                 description:
-                  "Optional APTParser.parse() output; fills the pricing_matrix table.",
+                  "Optional APTParser.parse() output; fills the price_matrix table.",
                 default: "None",
               },
             ],
@@ -217,14 +217,14 @@ export const API: ApiModule[] = [
                 name: "apt_parse_result",
                 type: "dict | pd.DataFrame | None",
                 description:
-                  "Optional APTParser.parse() output; fills the pricing_matrix table.",
+                  "Optional APTParser.parse() output; fills the price_matrix table.",
                 default: "None",
               },
             ],
             returns: {
               type: "dict",
               description:
-                'Standardized report with source_type "classic_prd".',
+                'Standardized report with source_type "stanford_classic_prd".',
             },
           },
           {
@@ -250,7 +250,7 @@ export const API: ApiModule[] = [
             signature:
               "transform_apt_to_standardized(apt_parse_result) -> dict",
             summary:
-              "Standardize APTParser output into a report whose only populated table is pricing_matrix.",
+              "Standardize APTParser output into a report whose only populated table is price_matrix.",
             params: [
               {
                 name: "apt_parse_result",
@@ -261,7 +261,7 @@ export const API: ApiModule[] = [
             returns: {
               type: "dict",
               description:
-                'Standardized report with source_type "classic_apt".',
+                'Standardized report with source_type "stanford_classic_apt".',
             },
           },
         ],
@@ -301,7 +301,7 @@ export const API: ApiModule[] = [
             signature:
               "merge_pin_into_standardized(standardized, pin_data) -> dict",
             summary:
-              "Replace the pricing_matrix table (and fill products, if empty) from a PIN file.",
+              "Replace the price_matrix table (and fill products, if empty) from a PIN file.",
             params: [
               {
                 name: "standardized",
@@ -323,7 +323,7 @@ export const API: ApiModule[] = [
             name: "merge_apt_into_standardized",
             signature:
               "merge_apt_into_standardized(standardized, apt_parse_result) -> dict",
-            summary: "Replace the pricing_matrix table from an APT file.",
+            summary: "Replace the price_matrix table from an APT file.",
             params: [
               {
                 name: "standardized",
@@ -376,7 +376,7 @@ export const API: ApiModule[] = [
             ],
             returns: {
               type: "pd.DataFrame",
-              description: "Columns: species_name, tree_count.",
+              description: "Columns: species_name, stem_count.",
             },
           },
           {
@@ -461,7 +461,7 @@ export const API: ApiModule[] = [
         name: "Price-matrix aggregations",
         module: "s4d_tools.aggregators",
         summary:
-          'Functions over the standardized "pricing_matrix" table (long-form rows with Species_Name, Assortment_Name, diameter/length class limits, and Relative_Value).',
+          'Functions over the standardized "price_matrix" table (long-form rows with species_name, assortment_name, diameter/length class limits, and relative_value).',
         methods: [
           {
             name: "pivot_relative_value_matrix",
@@ -473,13 +473,13 @@ export const API: ApiModule[] = [
                 name: "longform",
                 type: "pd.DataFrame",
                 description:
-                  'The standardized "pricing_matrix" table (or one species/assortment slice of it).',
+                  'The standardized "price_matrix" table (or one species/assortment slice of it).',
               },
             ],
             returns: {
               type: "pd.DataFrame",
               description:
-                "Diameter_Limit_mm rows × Length_Limit_cm columns with Relative_Value cells.",
+                "diameter_limit_mm rows × length_limit_cm columns with relative_value cells.",
             },
           },
           {
@@ -492,7 +492,7 @@ export const API: ApiModule[] = [
               {
                 name: "longform",
                 type: "pd.DataFrame",
-                description: 'The standardized "pricing_matrix" table.',
+                description: 'The standardized "price_matrix" table.',
               },
             ],
             returns: {

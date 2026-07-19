@@ -26,7 +26,7 @@ Unless noted, values come from `pandas.DataFrame` rows returned by `parse()`. Li
 
 ## PRI (`.pri`)
 
-`PRIParser.parse()` returns: `header`, `machine`, `objects`, `buyer_vendor`, `calibration`, `apt_history`, `species_groups`, `products`, `price_matrices`, `operators`, `production_statistics`, `log_codes`, `tree_codes`, `additional_info`, `logs`.
+`PRIParser.parse()` returns: `header`, `machine`, `objects`, `buyer_vendor`, `calibration`, `apt_history`, `species_groups`, `products`, `price_matrix`, `operators`, `production_statistics`, `log_codes`, `tree_codes`, `additional_info`, `logs`.
 
 | Name                                | Type        | Part                  |
 | ----------------------------------- | ----------- | --------------------- |
@@ -34,7 +34,7 @@ Unless noted, values come from `pandas.DataFrame` rows returned by `parse()`. Li
 | `modification_date`                 | str         | header                |
 | `valid_from_date`                   | str         | header                |
 | `start_date`                        | str         | header                |
-| `application_version`               | str         | header                |
+| `application_version_created`       | str         | header                |
 | `machine_id`                        | str         | machine               |
 | `machine_base_manufacturer`         | str         | machine               |
 | `machine_base_model`                | str         | machine               |
@@ -99,15 +99,15 @@ Unless noted, values come from `pandas.DataFrame` rows returned by `parse()`. Li
 | `num_diameter_classes`              | int         | products              |
 | `num_length_classes`                | int         | products              |
 | `product_group_number`              | int         | products              |
-| `diameter_limits_mm`                | list[int]   | price_matrices        |
-| `diameter_class_names`              | list[str]   | price_matrices        |
-| `length_limits_cm`                  | list[int]   | price_matrices        |
-| `grades`                            | list[int]   | price_matrices        |
-| `num_grades_used`                   | int         | price_matrices        |
-| `grade_descriptions`                | list[str]   | price_matrices        |
-| `price_categories`                  | list[int]   | price_matrices        |
-| `density_ub_kg_m3`                  | list[int]   | price_matrices        |
-| `density_ob_kg_m3`                  | list[int]   | price_matrices        |
+| `diameter_limits_mm`                | list[int]   | price_matrix          |
+| `diameter_class_names`              | list[str]   | price_matrix          |
+| `length_limits_cm`                  | list[int]   | price_matrix          |
+| `grades`                            | list[int]   | price_matrix          |
+| `num_grades_used`                   | int         | price_matrix          |
+| `grade_descriptions`                | list[str]   | price_matrix          |
+| `price_categories`                  | list[int]   | price_matrix          |
+| `density_ub_kg_m3`                  | list[int]   | price_matrix          |
+| `density_ob_kg_m3`                  | list[int]   | price_matrix          |
 | `operator_key`                      | str         | operators             |
 | `operator_name`                     | str         | operators             |
 | `num_stems`                         | int         | production_statistics |
@@ -175,22 +175,22 @@ Unless noted, values come from `pandas.DataFrame` rows returned by `parse()`. Li
 | `diameter_top_ub`     | int  | logs |
 | `diameter_mid_ob`     | int  | logs |
 | `diameter_mid_ub`     | int  | logs |
-| `diameter_root_ob`    | int  | logs |
-| `diameter_root_ub`    | int  | logs |
+| `diameter_butt_ob`    | int  | logs |
+| `diameter_butt_ub`    | int  | logs |
 | `forced_cross_cut`    | int  | logs |
 | `length_actual_cm`    | int  | logs |
 | `length_class_cm`     | int  | logs |
-| `volume_m3_custom`    | int  | logs |
-| `volume_m3_sob`       | int  | logs |
-| `volume_m3_sub`       | int  | logs |
-| `volume_m3_top_ob`    | int  | logs |
-| `volume_m3_top_ub`    | int  | logs |
-| `volume_dl_custom`    | int  | logs |
-| `volume_dl_sob`       | int  | logs |
-| `volume_dl_sub`       | int  | logs |
+| `volume_custom_m3`    | int  | logs |
+| `volume_sob_m3`       | int  | logs |
+| `volume_sub_m3`       | int  | logs |
+| `volume_top_ob_m3`    | int  | logs |
+| `volume_top_ub_m3`    | int  | logs |
+| `volume_custom_dl`    | int  | logs |
+| `volume_sob_dl`       | int  | logs |
+| `volume_sub_dl`       | int  | logs |
 | `bunch_diameter_top`  | int  | logs |
 | `bunch_length`        | int  | logs |
-| `bunch_volume_m3_sob` | int  | logs |
+| `bunch_volume_sob_m3` | int  | logs |
 | `bunch_sequence_id`   | int  | logs |
 | `bunch_index`         | int  | logs |
 | `diameter_unknown_1`  | int  | logs |

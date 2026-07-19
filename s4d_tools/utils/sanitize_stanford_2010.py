@@ -1,5 +1,5 @@
 """
-Redact GDPR-related and commercially sensitive data in Stanford 2010 (S4D2010) XML.
+Redact GDPR-related and commercially sensitive data in StanForD 2010 XML.
 
 Targets HPR, PIN, and other messages using ``urn:skogforsk:stanford2010``.
 """
@@ -10,7 +10,7 @@ import xml.etree.ElementTree as ET
 from io import BytesIO
 from typing import Union
 
-STANFORD_NS = "urn:skogforsk:stanford2010"
+from s4d_tools.parsers.stanford_2010.constants import STANFORD_2010_NAMESPACE
 
 _ALLOWED_ROOT_LOCAL = frozenset({"HarvestedProduction", "ProductInstruction"})
 
@@ -25,7 +25,7 @@ def _stanford_root(elem: ET.Element) -> bool:
     if _local_tag(elem.tag) not in _ALLOWED_ROOT_LOCAL:
         return False
     if elem.tag.startswith("{"):
-        return elem.tag.startswith(f"{{{STANFORD_NS}}}")
+        return elem.tag.startswith(f"{{{STANFORD_2010_NAMESPACE}}}")
     return True
 
 
@@ -77,7 +77,7 @@ def _redact_stem_times(root: ET.Element, placeholder: str) -> None:
                 _redact_leaves_under(ch, placeholder)
 
 
-def sanitize_s4d2010_xml(
+def sanitize_stanford_2010_xml(
     source: Union[bytes, str],
     *,
     placeholder: str = "xxx",
@@ -95,12 +95,12 @@ def sanitize_s4d2010_xml(
 
     if not _stanford_root(root):
         raise ValueError(
-            "Expected a Stanford 2010 root element "
+            "Expected a StanForD 2010 root element "
             "(HarvestedProduction or ProductInstruction in urn:skogforsk:stanford2010)."
         )
 
     tree = ET.ElementTree(root)
-    ET.register_namespace("", STANFORD_NS)
+    ET.register_namespace("", STANFORD_2010_NAMESPACE)
 
     for machine in root.iter():
         if _local_tag(machine.tag) == "Machine":
@@ -117,4 +117,4 @@ def sanitize_s4d2010_xml(
     return buf.getvalue()
 
 
-__all__ = ["STANFORD_NS", "sanitize_s4d2010_xml"]
+__all__ = ["STANFORD_2010_NAMESPACE", "sanitize_stanford_2010_xml"]

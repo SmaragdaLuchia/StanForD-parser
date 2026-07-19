@@ -7,11 +7,11 @@ def aggregate_stems_by_species(
     stems: pd.DataFrame,
     species_groups: pd.DataFrame,
 ) -> pd.DataFrame:
-    """Count harvested trees (stems) per species.
+    """Count harvested stems per species.
 
-    Returns a DataFrame with columns ``species_name`` and ``tree_count``.
+    Returns a DataFrame with columns ``species_name`` and ``stem_count``.
     """
-    empty: pd.DataFrame = pd.DataFrame(columns=["species_name", "tree_count"])
+    empty: pd.DataFrame = pd.DataFrame(columns=["species_name", "stem_count"])
     if stems is None or stems.empty:
         return empty
     if "species_group_key" not in stems.columns:
@@ -20,7 +20,7 @@ def aggregate_stems_by_species(
     g = (
         stems.groupby("species_group_key", sort=False)
         .size()
-        .reset_index(name="tree_count")
+        .reset_index(name="stem_count")
     )
 
     if (
@@ -38,7 +38,7 @@ def aggregate_stems_by_species(
     else:
         g["species_name"] = g["species_group_key"]
 
-    return g[["species_name", "tree_count"]].copy()
+    return g[["species_name", "stem_count"]].copy()
 
 
 __all__ = ["aggregate_stems_by_species"]

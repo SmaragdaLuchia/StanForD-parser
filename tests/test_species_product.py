@@ -40,9 +40,9 @@ def test_aggregate_volume_by_species_and_product_sums_and_order():
     assert len(out) == 2
     pine = out[out["species_name"] == "Pine"].iloc[0]
     assert pine["product_name"] == "Sawlog"
-    assert pine["volume"] == 1.5
+    assert pine["volume_m3"] == 1.5
     birch = out[out["species_name"] == "Birch"].iloc[0]
-    assert birch["volume"] == 2.0
+    assert birch["volume_m3"] == 2.0
 
 
 def test_empty_logs_returns_empty():
@@ -61,7 +61,7 @@ def test_pivot_volume_for_streamlit_wide():
         {
             "species_name": ["Pine", "Pine", "Birch"],
             "product_name": ["Sawlog", "Pulp", "Sawlog"],
-            "volume": [1.0, 0.5, 2.0],
+            "volume_m3": [1.0, 0.5, 2.0],
         }
     )
     wide = pivot_volume_for_streamlit(long_df, ["Pine", "Birch"])
@@ -85,5 +85,5 @@ def test_pivot_volume_to_percent_long_rows_sum_to_100():
 
 
 def test_pivot_skips_when_duplicate_columns_like_bad_merge():
-    bad = pd.DataFrame([[1, 2, 3]], columns=["species_name", "species_name", "volume"])
+    bad = pd.DataFrame([[1, 2, 3]], columns=["species_name", "species_name", "volume_m3"])
     assert pivot_volume_for_streamlit(bad, []).empty

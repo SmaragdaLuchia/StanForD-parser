@@ -23,8 +23,8 @@ from s4d_tools.transformers import (
     transform_hpr_to_standardized,
     transform_prd_to_standardized,
 )
-from s4d_tools.transformers.standradized_schema import META_HAS_PRI, META_SOURCE_TYPE
-from s4d_tools.utils.sanitize_s4d2010 import sanitize_s4d2010_xml
+from s4d_tools.transformers.standardized_schema import META_HAS_PRI, META_SOURCE_TYPE
+from s4d_tools.utils.sanitize_stanford_2010 import sanitize_stanford_2010_xml
 
 from chart_utils import assortment_breakdown_percent_chart, productivity_rates
 
@@ -75,8 +75,8 @@ tab_visualize, tab_redact, tab_demo = st.tabs(
 def _standardized_source_label(source_type: str) -> str:
     """Human-readable label for META_SOURCE_TYPE."""
     if source_type == "stanford_2010_hpr":
-        return "Stanford 2010 (HPR)"
-    if source_type == "classic_prd":
+        return "StanForD 2010 (HPR)"
+    if source_type == "stanford_classic_prd":
         return "Classic PRD"
     return source_type or "Unknown"
 
@@ -112,14 +112,14 @@ def _render_pri_style_logs_table(logs_df: pd.DataFrame) -> None:
 
     st.dataframe(display_df, use_container_width=True, height=400)
 
-    if "volume_dl_sob" in logs_df.columns:
+    if "volume_sob_dl" in logs_df.columns:
         st.subheader("Volume Statistics")
         col1, col2 = st.columns(2)
         with col1:
-            total_volume = logs_df["volume_dl_sob"].sum() / 10000
+            total_volume = logs_df["volume_sob_dl"].sum() / 10000
             st.metric("Total Volume (m³ s.o.b.)", f"{total_volume:,.2f}")
         with col2:
-            avg_volume = logs_df["volume_dl_sob"].mean() / 10000
+            avg_volume = logs_df["volume_sob_dl"].mean() / 10000
             st.metric("Average Log Volume (m³ s.o.b.)", f"{avg_volume:.4f}")
 
     if "length_actual_cm" in logs_df.columns:
@@ -132,13 +132,13 @@ def _render_pri_style_logs_table(logs_df: pd.DataFrame) -> None:
         with col3:
             st.metric("Avg Length (cm)", f"{logs_df['length_actual_cm'].mean():.1f}")
 
-    if "diameter_top_ob" in logs_df.columns and "diameter_root_ob" in logs_df.columns:
+    if "diameter_top_ob" in logs_df.columns and "diameter_butt_ob" in logs_df.columns:
         st.subheader("Diameter Statistics")
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Avg Top Diameter (mm)", f"{logs_df['diameter_top_ob'].mean():.0f}")
         with col2:
-            st.metric("Avg Root Diameter (mm)", f"{logs_df['diameter_root_ob'].mean():.0f}")
+            st.metric("Avg Butt Diameter (mm)", f"{logs_df['diameter_butt_ob'].mean():.0f}")
         with col3:
             if "diameter_mid_ob" in logs_df.columns:
                 st.metric("Avg Mid Diameter (mm)", f"{logs_df['diameter_mid_ob'].mean():.0f}")
@@ -162,9 +162,9 @@ def _render_price_matrix_tab(data: dict) -> None:
     st.header("Price matrix")
     st.caption(
         "Long-form **diameter × length** cells per species and assortment. "
-        "Classic **APT** sources use relative values; Stanford **2010 PIN** (with HPR) maps product matrix prices into the same table."
+        "Classic **APT** sources use relative values; StanForD **2010 PIN** (with HPR) maps product matrix prices into the same table."
     )
-    pm = data.get("pricing_matrix")
+    pm = data.get("price_matrix")
     if pm is None or pm.empty:
         st.info(
             "No price matrix rows in this report. "
@@ -203,7 +203,7 @@ def visualize_data(
 ) -> None:
     """
     Visualize the standardized report shape. Tab layout is identical for
-    Classic PRD and Stanford 2010 HPR; optional PRI sections use the same tabs when present.
+    Classic PRD and StanForD 2010 HPR; optional PRI sections use the same tabs when present.
     """
     if has_pri is None:
         has_pri = bool(data.get(META_HAS_PRI, False))
@@ -211,7 +211,7 @@ def visualize_data(
         has_pri = bool(has_pri)
 
     source_type = data.get(META_SOURCE_TYPE, "")
-    pm = data.get("pricing_matrix")
+    pm = data.get("price_matrix")
     has_price_matrix = pm is not None and not getattr(pm, "empty", True)
 
     tab_names = [
@@ -304,7 +304,7 @@ def visualize_data(
                         data.get("species_groups", pd.DataFrame()),
                     )
                     if not stems_agg.empty:
-                        species_df = stems_agg.rename(columns={"species_name": "Species", "tree_count": "Trees"})
+                        species_df = stems_agg.rename(columns={"species_name": "Species", "stem_count": "Trees"})
                     else:
                         species_df = pd.DataFrame({
                             'Species': species_names[:min_length],
@@ -394,7 +394,7 @@ def visualize_data(
                         data.get("species_groups", pd.DataFrame()),
                     )
                     if not stems_agg.empty:
-                        species_chart_df = stems_agg.rename(columns={"species_name": "Species", "tree_count": "Trees"})
+                        species_chart_df = stems_agg.rename(columns={"species_name": "Species", "stem_count": "Trees"})
                     else:
                         species_chart_df = pd.DataFrame(
                             {
@@ -468,7 +468,7 @@ def visualize_data(
     with tab_stems:
         st.header("Stems")
         st.caption(
-            "Stem-level rows appear for Stanford 2010 (HPR). "
+            "Stem-level rows appear for StanForD 2010 (HPR). "
             "Classic PRD standardized output has no stem table."
         )
         if "stems" in data and not data["stems"].empty:
@@ -519,7 +519,7 @@ with tab_visualize:
     st.write(
         "**Note:** PRI (Production-individual) can be added with PRD for more production detail. "
         "Optional **APT** (classic bucking instructions) adds relative price matrices for PRD. "
-        "For **Stanford 2010 HPR**, optional **PIN** (Product Instruction XML) supplies the product price matrix. "
+        "For **StanForD 2010 HPR**, optional **PIN** (Product Instruction XML) supplies the product price matrix. "
         "You can upload **APT and/or PIN** in the same optional uploader below."
     )
 
@@ -618,7 +618,7 @@ with tab_visualize:
             if temp_pin_file is not None and os.path.exists(temp_pin_file):
                 if file_type != 'hpr':
                     st.warning(
-                        "PIN (Product Instruction) applies to Stanford 2010 HPR only; "
+                        "PIN (Product Instruction) applies to StanForD 2010 HPR only; "
                         "ignoring the PIN file for this PRD report."
                     )
                 else:
@@ -665,14 +665,14 @@ with tab_visualize:
 
 with tab_redact:
     st.write(
-        "Upload **Stanford 2010 XML** (e.g. `.hpr`, `.pin`) to produce a copy with sensitive fields "
+        "Upload **StanForD 2010 XML** (e.g. `.hpr`, `.pin`) to produce a copy with sensitive fields "
         "replaced by a placeholder, with optional redaction of stem harvest dates and extension timestamps."
     )
     st.caption(
-        "Classic `.prd` / `.pri` reports are not XML; use an HPR or PIN export in the Stanford 2010 schema."
+        "Classic `.prd` / `.pri` reports are not XML; use an HPR or PIN export in the StanForD 2010 schema."
     )
     redact_upload = st.file_uploader(
-        "Stanford 2010 XML (HPR, PIN, …)",
+        "StanForD 2010 XML (HPR, PIN, …)",
         type=["hpr", "pin", "xml", "mom", "hqc", "thp"],
         key="redact_xml_upload",
     )
@@ -685,7 +685,7 @@ with tab_redact:
     if redact_upload is not None:
         raw_xml = redact_upload.getvalue()
         try:
-            sanitized = sanitize_s4d2010_xml(
+            sanitized = sanitize_stanford_2010_xml(
                 raw_xml,
                 placeholder=(redact_placeholder.strip() or "xxx"),
                 strip_stem_times=redact_strip_times,

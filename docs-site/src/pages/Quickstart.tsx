@@ -72,11 +72,11 @@ export default function Quickstart() {
 raw = HPRParser("tests/fixtures/toy_test.hpr").parse()
 
 print(list(raw.keys()))
-print(raw["logs"][["stem_key", "log_key", "product_key", "volume_sub_m3", "log_length"]])`}
+print(raw["logs"][["stem_key", "log_key", "product_key", "volume_sub_m3", "length_cm"]])`}
       />
       <ConsoleOutput>
         {`['header', 'machine', 'species_groups', 'products', 'objects', 'stems', 'logs']
-   stem_key log_key product_key volume_sub_m3 log_length
+   stem_key log_key product_key volume_sub_m3 length_cm
 0  STEM_001       1           1         0.150        450`}
       </ConsoleOutput>
 
@@ -149,7 +149,7 @@ volumes, species_order = aggregate_volume_by_species_and_product(
 print(volumes)`}
       />
       <ConsoleOutput>
-        {`  species_name  tree_count
+        {`  species_name  stem_count
 0            1           1
   species_name product_name  volume
 0            1            1       0`}

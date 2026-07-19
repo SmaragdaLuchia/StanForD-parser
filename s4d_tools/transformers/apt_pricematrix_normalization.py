@@ -4,11 +4,11 @@ from typing import Any, Dict, List, Union
 
 import pandas as pd
 
-from .standradized_schema import STANDARDIZED_PRICING_COLUMNS
+from .standardized_schema import STANDARDIZED_PRICE_MATRIX_COLUMNS
 
 
-def _standardized_pricing_columns() -> List[str]:
-    return list(STANDARDIZED_PRICING_COLUMNS)
+def _standardized_price_matrix_columns() -> List[str]:
+    return list(STANDARDIZED_PRICE_MATRIX_COLUMNS)
 
 
 def _is_classic_apt_price_matrix_dict(d: Dict[str, Any]) -> bool:
@@ -30,7 +30,7 @@ def expand_classic_apt_price_matrix(pm: Dict[str, Any]) -> pd.DataFrame:
     bitmasks = pm.get("permitted_quality_grade_bitmasks") or []
 
     if not flat or not dc or not lc:
-        return pd.DataFrame(columns=_standardized_pricing_columns())
+        return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
     n_mat = min(len(dc), len(lc))
     rows: List[Dict[str, Any]] = []
@@ -73,14 +73,14 @@ def expand_classic_apt_price_matrix(pm: Dict[str, Any]) -> pd.DataFrame:
                 rel = int(flat[k]) if k < len(flat) else 0
                 rows.append(
                     {
-                        "Species_Name": sp_name,
-                        "Assortment_Name": asm_name,
-                        "Allowed_Grades_Bitmask": bitmask,
-                        "Diameter_Lower_mm": int(d_bounds[i]),
-                        "Diameter_Limit_mm": int(d_bounds[i + 1]),
-                        "Length_Lower_cm": int(l_bounds[j]),
-                        "Length_Limit_cm": int(l_bounds[j + 1]),
-                        "Relative_Value": rel,
+                        "species_name": sp_name,
+                        "assortment_name": asm_name,
+                        "allowed_grades_bitmask": bitmask,
+                        "diameter_lower_mm": int(d_bounds[i]),
+                        "diameter_limit_mm": int(d_bounds[i + 1]),
+                        "length_lower_cm": int(l_bounds[j]),
+                        "length_limit_cm": int(l_bounds[j + 1]),
+                        "relative_value": rel,
                     }
                 )
         flat_off += cells
@@ -90,15 +90,15 @@ def expand_classic_apt_price_matrix(pm: Dict[str, Any]) -> pd.DataFrame:
 
 def build_relative_price_longform(rows: Union[List[Dict[str, Any]], pd.DataFrame]) -> pd.DataFrame:
     df = rows.copy() if isinstance(rows, pd.DataFrame) else pd.DataFrame(rows or [])
-    cols = _standardized_pricing_columns()
+    cols = _standardized_price_matrix_columns()
 
     defaults = {
-        "Allowed_Grades_Bitmask": 0,
-        "Diameter_Lower_mm": 0,
-        "Diameter_Limit_mm": 0,
-        "Length_Lower_cm": 0,
-        "Length_Limit_cm": 0,
-        "Relative_Value": 0,
+        "allowed_grades_bitmask": 0,
+        "diameter_lower_mm": 0,
+        "diameter_limit_mm": 0,
+        "length_lower_cm": 0,
+        "length_limit_cm": 0,
+        "relative_value": 0,
     }
 
     df = df.reindex(columns=cols)
@@ -114,19 +114,12 @@ def price_matrix_from_any_apt_shape(
     Normalize common APT parse output shapes into standardized long-form matrix rows.
     """
     if apt_parse_result is None:
-        return pd.DataFrame(columns=_standardized_pricing_columns())
+        return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
     if isinstance(apt_parse_result, pd.DataFrame):
         return build_relative_price_longform(apt_parse_result)
 
     if isinstance(apt_parse_result, dict):
-        for key in ("pricing_matrix", "apt_pricing_matrix"):
-            value = apt_parse_result.get(key)
-            if isinstance(value, pd.DataFrame):
-                return build_relative_price_longform(value)
-            if isinstance(value, dict) and _is_classic_apt_price_matrix_dict(value):
-                return expand_classic_apt_price_matrix(value)
-
         if "fields" in apt_parse_result and isinstance(apt_parse_result["fields"], dict):
             inner = apt_parse_result["fields"].get("price_matrix")
             if isinstance(inner, pd.DataFrame):

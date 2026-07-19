@@ -11,7 +11,7 @@ def aggregate_volume_by_species_and_product(
     species_groups: pd.DataFrame,
     products: pd.DataFrame,
 ) -> Tuple[pd.DataFrame, List[str]]:
-    empty = pd.DataFrame(columns=["species_name", "product_name", "volume"])
+    empty = pd.DataFrame(columns=["species_name", "product_name", "volume_m3"])
     if logs is None or logs.empty or stems is None or stems.empty:
         return empty, []
     if "stem_key" not in logs.columns or "stem_key" not in stems.columns:
@@ -31,15 +31,15 @@ def aggregate_volume_by_species_and_product(
 
     merged = merged.loc[:, ~merged.columns.duplicated()].copy()
     if "volume_sob_m3" not in merged.columns:
-        merged["volume"] = 0.0
+        merged["volume_m3"] = 0.0
     else:
         merged["volume_sob_m3"] = pd.to_numeric(
             merged["volume_sob_m3"].replace("", "0"), errors="coerce"
         ).fillna(0)
-        merged["volume"] = merged["volume_sob_m3"]
+        merged["volume_m3"] = merged["volume_sob_m3"]
 
     g = (
-        merged.groupby(["species_group_key", "product_key"], sort=False)["volume"]
+        merged.groupby(["species_group_key", "product_key"], sort=False)["volume_m3"]
         .sum()
         .reset_index()
     )
@@ -74,7 +74,7 @@ def aggregate_volume_by_species_and_product(
     g["product_name"] = g["product_name"].fillna("Unknown")
 
     out = (
-        g.groupby(["species_name", "product_name"], sort=False)["volume"]
+        g.groupby(["species_name", "product_name"], sort=False)["volume_m3"]
         .sum()
         .reset_index()
     )
@@ -90,16 +90,16 @@ def pivot_volume_for_streamlit(
     if sp_long is None or sp_long.empty:
         return pd.DataFrame()
     df = sp_long.loc[:, ~sp_long.columns.duplicated()].copy()
-    required = ("species_name", "product_name", "volume")
+    required = ("species_name", "product_name", "volume_m3")
     if any(c not in df.columns for c in required):
         return pd.DataFrame()
     df["species_name"] = df["species_name"].astype(str)
     df["product_name"] = df["product_name"].astype(str)
-    df["volume"] = pd.to_numeric(df["volume"], errors="coerce").fillna(0)
+    df["volume_m3"] = pd.to_numeric(df["volume_m3"], errors="coerce").fillna(0)
     pivot = df.pivot_table(
         index="species_name",
         columns="product_name",
-        values="volume",
+        values="volume_m3",
         aggfunc="sum",
         fill_value=0.0,
     )

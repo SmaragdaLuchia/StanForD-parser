@@ -21,8 +21,8 @@ from s4d_tools.transformers import (
     transform_hpr_to_standardized,
     transform_prd_to_standardized,
 )
-from s4d_tools.transformers.standradized_schema import META_HAS_PRI, META_SOURCE_TYPE
-from s4d_tools.utils.sanitize_s4d2010 import sanitize_s4d2010_xml
+from s4d_tools.transformers.standardized_schema import META_HAS_PRI, META_SOURCE_TYPE
+from s4d_tools.utils.sanitize_stanford_2010 import sanitize_stanford_2010_xml
 
 from chart_utils import assortment_breakdown_percent_chart, productivity_rates
 
@@ -46,8 +46,8 @@ tab_visualize, tab_redact, tab_demo = st.tabs(
 
 def _standardized_source_label_et(source_type: str) -> str:
     if source_type == "stanford_2010_hpr":
-        return "Stanford 2010 (HPR)"
-    if source_type == "classic_prd":
+        return "StanForD 2010 (HPR)"
+    if source_type == "stanford_classic_prd":
         return "Klassikaline PRD"
     return source_type or "Teadmata"
 
@@ -82,14 +82,14 @@ def _render_pri_style_logs_table_et(logs_df: pd.DataFrame) -> None:
 
     st.dataframe(display_df, use_container_width=True, height=400)
 
-    if "volume_dl_sob" in logs_df.columns:
+    if "volume_sob_dl" in logs_df.columns:
         st.subheader("Mahu statistika")
         col1, col2 = st.columns(2)
         with col1:
-            total_volume = logs_df["volume_dl_sob"].sum() / 10000
+            total_volume = logs_df["volume_sob_dl"].sum() / 10000
             st.metric("Kogumaht (m³ s.o.b.)", f"{total_volume:,.2f}")
         with col2:
-            avg_volume = logs_df["volume_dl_sob"].mean() / 10000
+            avg_volume = logs_df["volume_sob_dl"].mean() / 10000
             st.metric("Keskmine palgi maht (m³ s.o.b.)", f"{avg_volume:.4f}")
 
     if "length_actual_cm" in logs_df.columns:
@@ -102,13 +102,13 @@ def _render_pri_style_logs_table_et(logs_df: pd.DataFrame) -> None:
         with col3:
             st.metric("Keskm pikkus (cm)", f"{logs_df['length_actual_cm'].mean():.1f}")
 
-    if "diameter_top_ob" in logs_df.columns and "diameter_root_ob" in logs_df.columns:
+    if "diameter_top_ob" in logs_df.columns and "diameter_butt_ob" in logs_df.columns:
         st.subheader("Läbimõõdu statistika")
         col1, col2, col3 = st.columns(3)
         with col1:
             st.metric("Keskm. ülemine Ø (mm)", f"{logs_df['diameter_top_ob'].mean():.0f}")
         with col2:
-            st.metric("Keskm. juure Ø (mm)", f"{logs_df['diameter_root_ob'].mean():.0f}")
+            st.metric("Keskm. tüve Ø (mm)", f"{logs_df['diameter_butt_ob'].mean():.0f}")
         with col3:
             if "diameter_mid_ob" in logs_df.columns:
                 st.metric("Keskm. kesk-Ø (mm)", f"{logs_df['diameter_mid_ob'].mean():.0f}")
@@ -133,7 +133,7 @@ def _render_price_matrix_tab_et(data: dict) -> None:
         "Klassikaline StanForD **APT** suhteline väärtus (~162 sub 2). "
         "Read on läbimõõdu × pikkuse lahtrid liigi ja sortimendi kaupa."
     )
-    pm = data.get("pricing_matrix")
+    pm = data.get("price_matrix")
     if pm is None or pm.empty:
         st.info("Selles aruandes pole hinna maatriksi ridu.")
         return
@@ -170,7 +170,7 @@ def visualize_data(
 ) -> None:
     """
     Standardiseeritud aruande visualiseerimine. Vahekaartide järjekord on sama
-    klassikalise PRD ja Stanford 2010 (HPR) jaoks.
+    klassikalise PRD ja StanForD 2010 (HPR) jaoks.
     """
     if has_pri is None:
         has_pri = bool(data.get(META_HAS_PRI, False))
@@ -418,7 +418,7 @@ def visualize_data(
     with tab_stems:
         st.header("Puid")
         st.caption(
-            "Tüve taseme read on Stanford 2010 (HPR) failis. "
+            "Tüve taseme read on StanForD 2010 (HPR) failis. "
             "Klassikalise PRD standardiseeritud väljundis puudub tüvetabel."
         )
         if "stems" in data and not data["stems"].empty:
@@ -578,14 +578,14 @@ with tab_visualize:
 
 with tab_redact:
     st.write(
-        "Lae üles **Stanford 2010 XML** (nt `.hpr`, `.pin`), et saada koopia, kus tundlikud väljad on "
+        "Lae üles **StanForD 2010 XML** (nt `.hpr`, `.pin`), et saada koopia, kus tundlikud väljad on "
         "asendatud kohatäitega ning valikuliselt asendatud tüve ajatemplid."
     )
     st.caption(
-        "Klassikalised `.prd` / `.pri` aruanded ei ole see XML; kasuta Stanford 2010 HPR või PIN eksporti."
+        "Klassikalised `.prd` / `.pri` aruanded ei ole see XML; kasuta StanForD 2010 HPR või PIN eksporti."
     )
     redact_upload = st.file_uploader(
-        "Stanford 2010 XML (HPR, PIN, …)",
+        "StanForD 2010 XML (HPR, PIN, …)",
         type=["hpr", "pin", "xml", "mom", "hqc", "thp"],
         key="et_redact_xml_upload",
     )
@@ -598,7 +598,7 @@ with tab_redact:
     if redact_upload is not None:
         raw_xml = redact_upload.getvalue()
         try:
-            sanitized = sanitize_s4d2010_xml(
+            sanitized = sanitize_stanford_2010_xml(
                 raw_xml,
                 placeholder=(redact_placeholder.strip() or "xxx"),
                 strip_stem_times=redact_strip_times,

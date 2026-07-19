@@ -159,7 +159,7 @@ class TestHPRParser:
         expected_columns = [
             'stem_key', 'log_key', 'product_key', 'volume_price_m3',
             'volume_sob_m3', 'volume_sub_m3', 'cutting_reason', 'start_pos',
-            'log_length', 'diameter_butt_ob', 'diameter_butt_ub',
+            'length_cm', 'diameter_butt_ob', 'diameter_butt_ub',
             'diameter_mid_ob', 'diameter_mid_ub', 'diameter_top_ob', 'diameter_top_ub'
         ]
         for col in expected_columns:
@@ -171,7 +171,7 @@ class TestHPRParser:
         assert row['log_key'] == '1'
         assert row['product_key'] == '1'
         assert row['volume_sub_m3'] == '0.150'
-        assert row['log_length'] == '450'
+        assert row['length_cm'] == '450'
         assert row['diameter_top_ub'] == '200'
     
     def test_parse_species_groups(self, sample_hpr_file):

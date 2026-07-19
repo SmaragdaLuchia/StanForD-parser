@@ -347,7 +347,7 @@ class HPRParser:
                     
                     # Parse log measurements
                     log_measurement = log.find('s:LogMeasurement', self.ns)
-                    log_length = get_text(log_measurement, 's:LogLength')
+                    length_cm = get_text(log_measurement, 's:LogLength')
                     
                     # Parse log diameters (multiple categories)
                     log_diameters = log_measurement.findall('s:LogDiameter', self.ns) if log_measurement is not None else []
@@ -383,7 +383,7 @@ class HPRParser:
                         'volume_sub_m3': volume_sub,
                         'cutting_reason': cutting_reason,
                         'start_pos': start_pos,
-                        'log_length': log_length,
+                        'length_cm': length_cm,
                         'diameter_butt_ob': diameter_butt_ob,
                         'diameter_butt_ub': diameter_butt_ub,
                         'diameter_mid_ob': diameter_mid_ob,
@@ -408,29 +408,6 @@ class HPRParser:
             'stems': self._parse_stems(),
             'logs': self._parse_logs()
         }
-
-    def visualize(self, data=None):
-        """
-        Simple visualization: prints out the parsed data.
-        If data is None, calls parse() first.
-        """
-        if data is None:
-            data = self.parse()
-        
-        print("=" * 80)
-        print("PARSED DATA VISUALIZATION")
-        print("=" * 80)
-        
-        for key, df in data.items():
-            print(f"\n--- {key.upper()} ---")
-            if df.empty:
-                print(f"  (No {key} data)")
-            else:
-                print(df.to_string())
-                print(f"\n  Shape: {df.shape[0]} rows × {df.shape[1]} columns")
-
-
-        print("\n" + "=" * 80)
 
 class PINParser:
     """Parses Product Instructions (XML)"""

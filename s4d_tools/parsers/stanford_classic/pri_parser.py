@@ -27,14 +27,14 @@ class PRIParser:
         modification_date = self._get_value(12, 4, '')
         valid_from_date = self._get_value(13, 4, '')
         start_date = self._get_value(16, 4, '')
-        application_version = self._get_value(5, 1, '')
-        
+        application_version_created = self._get_value(5, 1, '')
+
         header_data.append({
             'creation_date': creation_date,
             'modification_date': modification_date,
             'valid_from_date': valid_from_date,
             'start_date': start_date,
-            'application_version': application_version
+            'application_version_created': application_version_created
         })
         
         return pd.DataFrame(header_data)
@@ -253,8 +253,8 @@ class PRIParser:
         
         return pd.DataFrame(products_data)
 
-    def _parse_price_matrices(self):
-        price_matrices_data = []
+    def _parse_price_matrix(self):
+        price_matrix_data = []
 
         diameter_limits = parse_list(self._get_value(131, 1, ''))
         diameter_class_names = parse_multiline_list(self._get_value(131, 2, ''))
@@ -270,7 +270,7 @@ class PRIParser:
         density_ub = parse_list(self._get_value(169, 1, ''))
         density_ob = parse_list(self._get_value(169, 2, ''))
         
-        price_matrices_data.append({
+        price_matrix_data.append({
             'diameter_limits_mm': diameter_limits,
             'diameter_class_names': diameter_class_names,
             'length_limits_cm': length_limits,
@@ -282,7 +282,7 @@ class PRIParser:
             'density_ob_kg_m3': density_ob
         })
         
-        return pd.DataFrame(price_matrices_data)
+        return pd.DataFrame(price_matrix_data)
 
     def _parse_operators(self):
         operators_data = []
@@ -503,7 +503,7 @@ class PRIParser:
             'apt_history': self._parse_apt_history(),
             'species_groups': self._parse_species_groups(),
             'products': self._parse_products(),
-            'price_matrices': self._parse_price_matrices(),
+            'price_matrix': self._parse_price_matrix(),
             'operators': self._parse_operators(),
             'production_statistics': self._parse_production_statistics(),
             'log_codes': self._parse_log_codes(),
@@ -511,21 +511,3 @@ class PRIParser:
             'additional_info': self._parse_additional_info(),
             'logs': self._parse_logs()
         }
-
-    def visualize(self, data=None):
-        if data is None:
-            data = self.parse()
-        
-        print("=" * 80)
-        print("PRI FILE VISUALIZATION (Production-individual)")
-        print("=" * 80)
-        
-        for key, df in data.items():
-            print(f"\n--- {key.upper()} ---")
-            if df.empty:
-                print(f"  (No {key} data)")
-            else:
-                print(df.to_string())
-                print(f"\n  Shape: {df.shape[0]} rows × {df.shape[1]} columns")
-
-        print("\n" + "=" * 80)

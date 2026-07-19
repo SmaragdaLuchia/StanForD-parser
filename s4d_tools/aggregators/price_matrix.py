@@ -12,17 +12,17 @@ def pivot_relative_value_matrix(
     if longform.empty:
         return pd.DataFrame()
     dedup_cols: List[str] = []
-    if "Diameter_Lower_mm" in longform.columns:
-        dedup_cols.append("Diameter_Lower_mm")
-    dedup_cols.append("Diameter_Limit_mm")
-    if "Length_Lower_cm" in longform.columns:
-        dedup_cols.append("Length_Lower_cm")
-    dedup_cols.append("Length_Limit_cm")
+    if "diameter_lower_mm" in longform.columns:
+        dedup_cols.append("diameter_lower_mm")
+    dedup_cols.append("diameter_limit_mm")
+    if "length_lower_cm" in longform.columns:
+        dedup_cols.append("length_lower_cm")
+    dedup_cols.append("length_limit_cm")
     sub = longform.drop_duplicates(subset=dedup_cols, keep="first")
     return sub.pivot_table(
-        index="Diameter_Limit_mm",
-        columns="Length_Limit_cm",
-        values="Relative_Value",
+        index="diameter_limit_mm",
+        columns="length_limit_cm",
+        values="relative_value",
         aggfunc="first",
     )
 
@@ -33,9 +33,9 @@ def price_matrix_heatmaps_by_assortment(
     out: List[Dict[str, Union[str, int, pd.DataFrame]]] = []
     if longform.empty:
         return out
-    keys = longform.groupby(["Species_Name", "Assortment_Name"], sort=False)
+    keys = longform.groupby(["species_name", "assortment_name"], sort=False)
     for (species, assortment), g in keys:
-        bitmask = int(g["Allowed_Grades_Bitmask"].iloc[0])
+        bitmask = int(g["allowed_grades_bitmask"].iloc[0])
         matrix = pivot_relative_value_matrix(g)
         out.append(
             {

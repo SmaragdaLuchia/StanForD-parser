@@ -21,7 +21,7 @@ const STEPS: Step[] = [
       "Machine logs arrive in one of two StanForD dialects: Classic tilde-separated text files (.prd, .pri, .apt, .stm) or StanForD 2010 XML (.hpr, .pin). Each parser reads one format and returns a dict of DataFrames, one per file section — header, machine, objects, stems, logs — keeping the source file's own field vocabulary. Below: the logs table from HPRParser.parse().",
     inputNote: null,
     module: "s4d_tools.parsers",
-    columns: ["stem_key", "log_key", "product_key", "volume_sob_m3", "log_length", "diameter_top_ob"],
+    columns: ["stem_key", "log_key", "product_key", "volume_sob_m3", "length_cm", "diameter_top_ob"],
     rows: [
       ["STEM_001", "1", "1", "0.312", "450", "218"],
       ["STEM_001", "2", "1", "0.204", "430", "176"],
@@ -53,7 +53,7 @@ const STEPS: Step[] = [
       "Aggregators are pure functions over standardized DataFrames — no parsing, no I/O. They produce the chart-ready frames the Streamlit app plots: tree counts per species, volume per species × product, and price-matrix heatmaps. Because they only ever consume the standardized schema, the same aggregations work for every source format. Below: aggregate_volume_by_species_and_product().",
     inputNote: "Derived from the Standardizing output above",
     module: "s4d_tools.aggregators",
-    columns: ["species_name", "product_name", "volume"],
+    columns: ["species_name", "product_name", "volume_m3"],
     rows: [
       ["Pine", "Pine sawlog", "0.516"],
       ["Pine", "Pine pulpwood", "0.155"],

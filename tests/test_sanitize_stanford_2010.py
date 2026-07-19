@@ -8,7 +8,7 @@ _project_root = Path(__file__).resolve().parent.parent
 if str(_project_root) not in sys.path:
     sys.path.insert(0, str(_project_root))
 
-from s4d_tools.utils.sanitize_s4d2010 import sanitize_s4d2010_xml
+from s4d_tools.utils.sanitize_stanford_2010 import sanitize_stanford_2010_xml
 
 NS = "urn:skogforsk:stanford2010"
 
@@ -43,7 +43,7 @@ def test_redacts_machine_owner_logging_contractor_contact_forest_owner():
   </ObjectDefinition>
 </HarvestedProduction>
 """
-    out = sanitize_s4d2010_xml(xml.encode(), strip_stem_times=False)
+    out = sanitize_stanford_2010_xml(xml.encode(), strip_stem_times=False)
     root = ET.fromstring(out)
     mo = root.find(f".//{{{NS}}}MachineOwner")
     assert mo.find(_q("FirstName")).text == "xxx"
@@ -71,7 +71,7 @@ def test_redacts_stem_harvest_and_extension():
   </Stem>
 </HarvestedProduction>
 """
-    out = sanitize_s4d2010_xml(xml.encode(), strip_stem_times=True)
+    out = sanitize_stanford_2010_xml(xml.encode(), strip_stem_times=True)
     root = ET.fromstring(out)
     stem = root.find(f".//{{{NS}}}Stem")
     assert stem.find(_q("HarvestDate")).text == "xxx"
@@ -91,7 +91,7 @@ def test_pin_root_accepted():
   </ProductDefinition>
 </ProductInstruction>
 """
-    out = sanitize_s4d2010_xml(xml.encode(), strip_stem_times=False)
+    out = sanitize_stanford_2010_xml(xml.encode(), strip_stem_times=False)
     root = ET.fromstring(out)
     assert root.tag == _q("ProductInstruction")
     cpd = root.find(f".//{{{NS}}}ClassifiedProductDefinition")
@@ -101,8 +101,8 @@ def test_pin_root_accepted():
 
 def test_rejects_non_stanford_xml():
     bad = b"<root><a/></root>"
-    with pytest.raises(ValueError, match="Stanford 2010"):
-        sanitize_s4d2010_xml(bad)
+    with pytest.raises(ValueError, match="StanForD 2010"):
+        sanitize_stanford_2010_xml(bad)
 
 
 if __name__ == "__main__":

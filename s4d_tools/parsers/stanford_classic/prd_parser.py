@@ -142,32 +142,3 @@ class PRDParser:
             'products': self._parse_products(),
             'statistics': self._parse_statistics()
         }
-
-    def visualize(self, data=None):
-        if data is None:
-            data = self.parse()
-
-        print("=" * 80)
-        print("PRD FILE VISUALIZATION")
-        print("=" * 80)
-
-        for key, df in data.items():
-            print(f"\n--- {key.upper()} ---")
-            if df.empty:
-                print(f"  (No {key} data)")
-            else:
-                print(df.to_string())
-                print(f"\n  Shape: {df.shape[0]} rows × {df.shape[1]} columns")
-
-                if key == 'statistics' and not df.empty:
-                    stats_row = df.iloc[0]
-                    if 'stems_per_species' in stats_row and 'species_names' in stats_row:
-                        species_names = stats_row['species_names']
-                        stems_per_species = stats_row['stems_per_species']
-
-                        if species_names and stems_per_species:
-                            print("\n  Stems per Species:")
-                            for name, count in zip(species_names, stems_per_species):
-                                print(f"    {name}: {count}")
-
-        print("\n" + "=" * 80)

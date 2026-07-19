@@ -1,6 +1,6 @@
 
-DEFAULT_ENCODING = 'iso-8859-15'  
-BLOCK_SEPARATOR = '~'           
+DEFAULT_ENCODING = 'iso-8859-15'
+BLOCK_SEPARATOR = '~'
 
 PRI_LOG_CODES = {
     1: "assortment_index",
@@ -12,22 +12,22 @@ PRI_LOG_CODES = {
     202: "diameter_top_ub",
     203: "diameter_mid_ob",
     204: "diameter_mid_ub",
-    205: "diameter_root_ob",
-    206: "diameter_root_ub",
+    205: "diameter_butt_ob",
+    206: "diameter_butt_ub",
     300: "forced_cross_cut",
     301: "length_actual_cm",
     302: "length_class_cm",
-    400: "volume_m3_custom",
-    401: "volume_m3_sob",
-    402: "volume_m3_sub",
-    403: "volume_m3_top_ob",
-    404: "volume_m3_top_ub",
-    420: "volume_dl_custom",
-    421: "volume_dl_sob",
-    422: "volume_dl_sub",
+    400: "volume_custom_m3",
+    401: "volume_sob_m3",
+    402: "volume_sub_m3",
+    403: "volume_top_ob_m3",
+    404: "volume_top_ub_m3",
+    420: "volume_custom_dl",
+    421: "volume_sob_dl",
+    422: "volume_sub_dl",
     220: "bunch_diameter_top",
     303: "bunch_length",
-    407: "bunch_volume_m3_sob",
+    407: "bunch_volume_sob_m3",
     510: "bunch_sequence_id",
     511: "bunch_index",
     207: "diameter_unknown_1",

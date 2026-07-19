@@ -27,7 +27,7 @@ class TestPRIParser:
         assert isinstance(data, dict)
         expected_keys = [
             'header', 'machine', 'objects', 'buyer_vendor', 'calibration',
-            'apt_history', 'species_groups', 'products', 'price_matrices',
+            'apt_history', 'species_groups', 'products', 'price_matrix',
             'operators', 'production_statistics', 'log_codes', 'tree_codes',
             'additional_info', 'logs'
         ]
@@ -45,7 +45,7 @@ class TestPRIParser:
         
         expected_columns = [
             'creation_date', 'modification_date', 'valid_from_date',
-            'start_date', 'application_version'
+            'start_date', 'application_version_created'
         ]
         for col in expected_columns:
             assert col in header_df.columns
@@ -55,7 +55,7 @@ class TestPRIParser:
         assert row['modification_date'] == ''
         assert row['valid_from_date'] == ''
         assert row['start_date'] == ''
-        assert row['application_version'] == ''
+        assert row['application_version_created'] == ''
     
     def test_parse_machine(self, sample_pri_file):
         parser = PRIParser(sample_pri_file)
