@@ -32,7 +32,7 @@ class TestPRDParser:
     
     def test_parse_header(self, sample_prd_file):
         parser = PRDParser(sample_prd_file)
-        header_df = parser._parse_header()
+        header_df = parser.parse().get("header")
         
         assert isinstance(header_df, pd.DataFrame)
         assert not header_df.empty
@@ -53,7 +53,7 @@ class TestPRDParser:
     
     def test_parse_machine(self, sample_prd_file):
         parser = PRDParser(sample_prd_file)
-        machine_df = parser._parse_machine()
+        machine_df = parser.parse().get("machine")
         
         assert isinstance(machine_df, pd.DataFrame)
         assert not machine_df.empty
@@ -71,7 +71,7 @@ class TestPRDParser:
     
     def test_parse_objects(self, sample_prd_file):
         parser = PRDParser(sample_prd_file)
-        objects_df = parser._parse_objects()
+        objects_df = parser.parse().get("objects")
         
         assert isinstance(objects_df, pd.DataFrame)
         assert not objects_df.empty
@@ -89,7 +89,7 @@ class TestPRDParser:
     
     def test_parse_species_groups(self, sample_prd_file):
         parser = PRDParser(sample_prd_file)
-        species_df = parser._parse_species_groups()
+        species_df = parser.parse().get("species_groups")
         
         assert isinstance(species_df, pd.DataFrame)
         assert not species_df.empty
@@ -108,7 +108,7 @@ class TestPRDParser:
     
     def test_parse_products(self, sample_prd_file):
         parser = PRDParser(sample_prd_file)
-        products_df = parser._parse_products()
+        products_df = parser.parse().get("products")
         
         assert isinstance(products_df, pd.DataFrame)
         assert not products_df.empty
@@ -127,7 +127,7 @@ class TestPRDParser:
     
     def test_parse_statistics(self, sample_prd_file):
         parser = PRDParser(sample_prd_file)
-        statistics_df = parser._parse_statistics()
+        statistics_df = parser.parse().get("statistics")
         
         assert isinstance(statistics_df, pd.DataFrame)
         assert not statistics_df.empty

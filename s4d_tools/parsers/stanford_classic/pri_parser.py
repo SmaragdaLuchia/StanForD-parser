@@ -1,24 +1,13 @@
 import pandas as pd
 import numpy as np
 
+from s4d_tools.utils.numeric_utils import safe_int
 from .constants import PRI_LOG_CODES
-from .utils.helpers import get_value, load_raw_data, parse_list, parse_multiline_list
+from .stanford_classic_base import _StanfordClassicParser
+from .utils.helpers import parse_list, parse_multiline_list
 
 
-class PRIParser:
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self._raw_data = None
-
-    def _load_raw_data(self):
-        if self._raw_data is None:
-            self._raw_data = load_raw_data(self.file_path, merge_duplicate_keys=True)
-        return self._raw_data
-
-    def _get_value(self, group_id, variable_id, default=None):
-        if self._raw_data is None:
-            self._load_raw_data()
-        return get_value(self._raw_data, group_id, variable_id, default)
+class PRIParser(_StanfordClassicParser):
 
     def _parse_header(self):
         header_data = []
@@ -139,7 +128,7 @@ class PRIParser:
         diameter_correction_b = parse_list(self._get_value(49, 3, ''), float)
         
         calibration_data.append({
-            'num_length_calibrations': int(num_length_cal) if num_length_cal.isdigit() else 0,
+            'num_length_calibrations': safe_int(num_length_cal, 0),
             'num_length_cal_per_species': num_length_cal_per_species,
             'num_length_positions': num_length_positions,
             'length_cal_dates': length_cal_dates,
@@ -148,7 +137,7 @@ class PRIParser:
             'length_positions_cm': length_positions,
             'length_corrections_mm': length_corrections,
             'length_corrections_butt_mm': length_corrections_butt,
-            'num_diameter_calibrations': int(num_diameter_cal) if num_diameter_cal.isdigit() else 0,
+            'num_diameter_calibrations': safe_int(num_diameter_cal, 0),
             'num_diameter_cal_per_species': num_diameter_cal_per_species,
             'num_diameter_positions': num_diameter_positions,
             'diameter_cal_dates': diameter_cal_dates,
@@ -173,7 +162,7 @@ class PRIParser:
         reset_signature = self._get_value(51, 6, '')
         
         apt_history_data.append({
-            'num_changes': int(num_changes) if num_changes.isdigit() else 0,
+            'num_changes': safe_int(num_changes, 0),
             'change_dates': change_dates,
             'change_variables': change_variables,
             'change_machine_ids': change_machine_ids,
@@ -199,7 +188,7 @@ class PRIParser:
         bark_latitude = self._get_value(113, 4, '')
         bark_function_type = parse_list(self._get_value(113, 7, ''))
         
-        num_species_int = int(num_species) if num_species.isdigit() else len(species_names)
+        num_species_int = safe_int(num_species, len(species_names))
         for i in range(num_species_int):
             species_groups_data.append({
                 'species_group_key': str(species_codes[i]) if i < len(species_codes) else str(i+1),
@@ -216,7 +205,7 @@ class PRIParser:
         products_data = []
         
         num_species = self._get_value(111, 1, '0')
-        num_species_int = int(num_species) if num_species.isdigit() else 0
+        num_species_int = safe_int(num_species, 0)
 
         num_assortments = parse_list(self._get_value(116, 1, ''))
 
@@ -275,7 +264,7 @@ class PRIParser:
             'diameter_class_names': diameter_class_names,
             'length_limits_cm': length_limits,
             'grades': grades,
-            'num_grades_used': int(num_grades_used) if num_grades_used.isdigit() else 0,
+            'num_grades_used': safe_int(num_grades_used, 0),
             'grade_descriptions': grade_descriptions,
             'price_categories': price_categories,
             'density_ub_kg_m3': density_ub,
@@ -290,7 +279,7 @@ class PRIParser:
         num_operators = self._get_value(211, 2, '0')
         operator_names = parse_multiline_list(self._get_value(212, 1, ''))
         
-        num_operators_int = int(num_operators) if num_operators.isdigit() else len(operator_names)
+        num_operators_int = safe_int(num_operators, len(operator_names))
         for i in range(num_operators_int):
             operators_data.append({
                 'operator_key': str(i + 1),
@@ -325,18 +314,18 @@ class PRIParser:
         distance_per_operator = parse_list(self._get_value(258, 2, ''))
         
         statistics_data.append({
-            'num_stems': int(num_stems) if num_stems.isdigit() else 0,
-            'total_stems_site': int(total_stems_site) if total_stems_site.isdigit() else 0,
-            'num_multi_tree_occasions': int(num_multi_tree_occasions) if num_multi_tree_occasions.isdigit() else 0,
-            'num_multi_tree_stems': int(num_multi_tree_stems) if num_multi_tree_stems.isdigit() else 0,
-            'num_multi_tree_occasions_measured': int(num_multi_tree_occasions_measured) if num_multi_tree_occasions_measured.isdigit() else 0,
-            'num_stem_bunches': int(num_stem_bunches) if num_stem_bunches.isdigit() else 0,
+            'num_stems': safe_int(num_stems, 0),
+            'total_stems_site': safe_int(total_stems_site, 0),
+            'num_multi_tree_occasions': safe_int(num_multi_tree_occasions, 0),
+            'num_multi_tree_stems': safe_int(num_multi_tree_stems, 0),
+            'num_multi_tree_occasions_measured': safe_int(num_multi_tree_occasions_measured, 0),
+            'num_stem_bunches': safe_int(num_stem_bunches, 0),
             'total_merchantable_volume_m3_ub': total_merchantable_volume,
-            'estimated_logs_bunched': int(estimated_logs_bunched) if estimated_logs_bunched.isdigit() else 0,
-            'total_log_bunches_site': int(total_log_bunches_site) if total_log_bunches_site.isdigit() else 0,
-            'num_log_bunches': int(num_log_bunches) if num_log_bunches.isdigit() else 0,
-            'num_logs': int(num_logs) if num_logs.isdigit() else 0,
-            'total_logs_site': int(total_logs_site) if total_logs_site.isdigit() else 0,
+            'estimated_logs_bunched': safe_int(estimated_logs_bunched, 0),
+            'total_log_bunches_site': safe_int(total_log_bunches_site, 0),
+            'num_log_bunches': safe_int(num_log_bunches, 0),
+            'num_logs': safe_int(num_logs, 0),
+            'total_logs_site': safe_int(total_logs_site, 0),
             'distance_covered_km': float(distance_covered) if distance_covered.replace('.', '').isdigit() else 0.0,
             'distance_per_operator_km': distance_per_operator
         })
@@ -358,14 +347,14 @@ class PRIParser:
         num_multi_tree_log_data = self._get_value(257, 2, '0')
         
         log_codes_data.append({
-            'num_log_codes': int(num_log_codes) if num_log_codes.isdigit() else 0,
-            'num_downgrade_codes': int(num_downgrade_codes) if num_downgrade_codes.isdigit() else 0,
-            'num_multi_tree_codes': int(num_multi_tree_codes) if num_multi_tree_codes.isdigit() else 0,
+            'num_log_codes': safe_int(num_log_codes, 0),
+            'num_downgrade_codes': safe_int(num_downgrade_codes, 0),
+            'num_multi_tree_codes': safe_int(num_multi_tree_codes, 0),
             'log_codes': log_codes,
             'downgrade_codes': downgrade_codes,
             'multi_tree_codes': multi_tree_codes,
-            'num_log_data_fields': int(num_log_data) if num_log_data.isdigit() else 0,
-            'num_multi_tree_log_data_fields': int(num_multi_tree_log_data) if num_multi_tree_log_data.isdigit() else 0
+            'num_log_data_fields': safe_int(num_log_data, 0),
+            'num_multi_tree_log_data_fields': safe_int(num_multi_tree_log_data, 0)
         })
         
         return pd.DataFrame(log_codes_data)
@@ -386,15 +375,15 @@ class PRIParser:
         num_multi_felling_data = self._get_value(267, 3, '0')
         
         tree_codes_data.append({
-            'num_tree_codes': int(num_tree_codes) if num_tree_codes.isdigit() else 0,
-            'num_multi_tree_codes': int(num_multi_tree_codes) if num_multi_tree_codes.isdigit() else 0,
-            'num_multi_felling_codes': int(num_multi_felling_codes) if num_multi_felling_codes.isdigit() else 0,
+            'num_tree_codes': safe_int(num_tree_codes, 0),
+            'num_multi_tree_codes': safe_int(num_multi_tree_codes, 0),
+            'num_multi_felling_codes': safe_int(num_multi_felling_codes, 0),
             'tree_codes': tree_codes,
             'multi_tree_codes': multi_tree_codes,
             'multi_felling_codes': multi_felling_codes,
-            'num_tree_data_fields': int(num_tree_data) if num_tree_data.isdigit() else 0,
-            'num_multi_tree_data_fields': int(num_multi_tree_data) if num_multi_tree_data.isdigit() else 0,
-            'num_multi_felling_data_fields': int(num_multi_felling_data) if num_multi_felling_data.isdigit() else 0
+            'num_tree_data_fields': safe_int(num_tree_data, 0),
+            'num_multi_tree_data_fields': safe_int(num_multi_tree_data, 0),
+            'num_multi_felling_data_fields': safe_int(num_multi_felling_data, 0)
         })
         
         return pd.DataFrame(tree_codes_data)
@@ -460,8 +449,8 @@ class PRIParser:
             return pd.DataFrame()
         
         try:
-            num_log_codes_int = int(num_log_codes) if num_log_codes.isdigit() else 0
-            num_logs_int = int(num_logs) if num_logs.isdigit() else 0
+            num_log_codes_int = safe_int(num_log_codes, 0)
+            num_logs_int = safe_int(num_logs, 0)
             
             if num_log_codes_int == 0 or num_logs_int == 0:
                 return pd.DataFrame()
@@ -488,7 +477,7 @@ class PRIParser:
             
             return logs_df
             
-        except (ValueError, IndexError) as e:
+        except (ValueError, IndexError):
             return pd.DataFrame()
 
     def parse(self):

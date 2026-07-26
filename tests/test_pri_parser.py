@@ -37,7 +37,7 @@ class TestPRIParser:
     
     def test_parse_header(self, sample_pri_file):
         parser = PRIParser(sample_pri_file)
-        header_df = parser._parse_header()
+        header_df = parser.parse().get("header")
         
         assert isinstance(header_df, pd.DataFrame)
         assert not header_df.empty
@@ -59,7 +59,7 @@ class TestPRIParser:
     
     def test_parse_machine(self, sample_pri_file):
         parser = PRIParser(sample_pri_file)
-        machine_df = parser._parse_machine()
+        machine_df = parser.parse().get("machine")
         
         assert isinstance(machine_df, pd.DataFrame)
         assert not machine_df.empty
@@ -81,7 +81,7 @@ class TestPRIParser:
     
     def test_parse_objects(self, sample_pri_file):
         parser = PRIParser(sample_pri_file)
-        objects_df = parser._parse_objects()
+        objects_df = parser.parse().get("objects")
         
         assert isinstance(objects_df, pd.DataFrame)
         assert not objects_df.empty
@@ -103,14 +103,14 @@ class TestPRIParser:
     
     def test_parse_species_groups(self, sample_pri_file):
         parser = PRIParser(sample_pri_file)
-        species_df = parser._parse_species_groups()
+        species_df = parser.parse().get("species_groups")
         
         assert isinstance(species_df, pd.DataFrame)
         assert species_df.empty
     
     def test_parse_products(self, sample_pri_file):
         parser = PRIParser(sample_pri_file)
-        products_df = parser._parse_products()
+        products_df = parser.parse().get("products")
         
         assert isinstance(products_df, pd.DataFrame)
         assert products_df.empty

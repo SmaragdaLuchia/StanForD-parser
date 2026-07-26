@@ -2,7 +2,7 @@ import xml.etree.ElementTree as ET
 import pandas as pd
 from s4d_tools.utils.date_utils import format_date
 from s4d_tools.parsers.stanford_2010.constants import STANFORD_2010_NS
-from s4d_tools.parsers.stanford_2010.utils import get_text
+from s4d_tools.parsers.stanford_2010.utils import get_text, get_attrib
 
 
 class HPRParser:
@@ -103,14 +103,11 @@ class HPRParser:
             species_group_key = get_text(species_group, 's:SpeciesGroupKey')
             modification_date_raw = get_text(species_group, 's:SpeciesGroupModificationDate')
             modification_date = format_date(modification_date_raw)
-            species_group_user_id = species_group.find('s:SpeciesGroupUserID', self.ns)
-            species_group_user_id_value = species_group_user_id.text if species_group_user_id is not None else ''
-            species_group_user_id_agency = species_group_user_id.attrib.get('agency', '') if species_group_user_id is not None else ''
+            species_group_user_id_value = get_text(species_group, 's:SpeciesGroupUserID')
+            species_group_user_id_agency = get_attrib(species_group, 's:SpeciesGroupUserID', 'agency')
             species_group_name = get_text(species_group, 's:SpeciesGroupName')
-            species_group_info = species_group.find('s:SpeciesGroupInfo', self.ns)
-            species_group_info_value = species_group_info.text if species_group_info is not None and species_group_info.text else ''
-            species_group_version = species_group.find('s:SpeciesGroupVersion', self.ns)
-            species_group_version_value = species_group_version.text if species_group_version is not None else ''
+            species_group_info_value = get_text(species_group, 's:SpeciesGroupInfo')
+            species_group_version_value = get_text(species_group, 's:SpeciesGroupVersion')
             species_group_presentation_order = get_text(species_group, 's:SpeciesGroupPresentationOrder')
             dbh_height = get_text(species_group, 's:DBHHeight')
             
@@ -120,8 +117,7 @@ class HPRParser:
             mth_start_grade = get_text(grades, 's:MTHStartGrade')
             
             # Parse BarkFunction
-            bark_function = species_group.find('s:BarkFunction', self.ns)
-            bark_function_category = bark_function.attrib.get('barkFunctionCategory', '') if bark_function is not None else ''
+            bark_function_category = get_attrib(species_group, 's:BarkFunction', 'barkFunctionCategory')
             swedish_zacco = bark_function.find('s:SwedishZacco', self.ns) if bark_function is not None else None
             constant_a = get_text(swedish_zacco, 's:ConstantA')
             factor_b = get_text(swedish_zacco, 's:FactorB')
@@ -159,9 +155,8 @@ class HPRParser:
             product_name = get_text(classified_product, 's:ProductName')
             product_modification_date_raw = get_text(classified_product, 's:ModificationDate')
             product_modification_date = format_date(product_modification_date_raw)
-            product_user_id = classified_product.find('s:ProductUserID', self.ns) if classified_product is not None else None
-            product_user_id_value = product_user_id.text if product_user_id is not None else ''
-            product_user_id_agency = product_user_id.attrib.get('agency', '') if product_user_id is not None else ''
+            product_user_id_value = get_text(classified_product, 's:ProductUserID')
+            product_user_id_agency = get_attrib(classified_product, 's:ProductUserID', 'agency')
             product_species_group_key = get_text(classified_product, 's:SpeciesGroupKey')
             
             products_data.append({
@@ -185,16 +180,14 @@ class HPRParser:
         
         for obj in objects:
             object_key = get_text(obj, 's:ObjectKey')
-            object_user_id = obj.find('s:ObjectUserID', self.ns)
-            object_user_id_value = object_user_id.text if object_user_id is not None else ''
-            object_user_id_agency = object_user_id.attrib.get('agency', '') if object_user_id is not None else ''
+            object_user_id_value = get_text(obj, 's:ObjectUserID')
+            object_user_id_agency = get_attrib(obj, 's:ObjectUserID', 'agency')
             object_name = get_text(obj, 's:ObjectName')
             object_modification_date_raw = get_text(obj, 's:ObjectModificationDate')
             object_modification_date = format_date(object_modification_date_raw)
             forest_certification = get_text(obj, 's:ForestCertification')
-            contract_number = obj.find('s:ContractNumber', self.ns)
-            contract_number_value = contract_number.text if contract_number is not None else ''
-            contract_number_category = contract_number.attrib.get('ContractCategory', '') if contract_number is not None else ''
+            contract_number_value = get_text(obj, 's:ContractNumber')
+            contract_number_category = get_attrib(obj, 's:ContractNumber', 'ContractCategory')
             real_estate_id_object = get_text(obj, 's:RealEstateIDObject')
             start_date_raw = get_text(obj, 's:StartDate')
             start_date = format_date(start_date_raw)
@@ -204,9 +197,8 @@ class HPRParser:
             # Parse SubObject
             sub_object = obj.find('s:SubObject', self.ns)
             sub_object_key = get_text(sub_object, 's:SubObjectKey')
-            sub_object_user_id = sub_object.find('s:SubObjectUserID', self.ns) if sub_object is not None else None
-            sub_object_user_id_value = sub_object_user_id.text if sub_object_user_id is not None else ''
-            sub_object_user_id_agency = sub_object_user_id.attrib.get('agency', '') if sub_object_user_id is not None else ''
+            sub_object_user_id_value = get_text(sub_object, 's:SubObjectUserID')
+            sub_object_user_id_agency = get_attrib(sub_object, 's:SubObjectUserID', 'agency')
             sub_object_name = get_text(sub_object, 's:SubObjectName')
             real_estate_id_sub_object = get_text(sub_object, 's:RealEstateIDSubObject')
             
@@ -408,9 +400,3 @@ class HPRParser:
             'stems': self._parse_stems(),
             'logs': self._parse_logs()
         }
-
-class PINParser:
-    """Parses Product Instructions (XML)"""
-    def parse(self):
-        # Logic to read <ProductDefinition>, <Species>, etc.
-        pass

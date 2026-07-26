@@ -5,15 +5,7 @@ import pandas as pd
 
 from s4d_tools.parsers.stanford_2010.constants import STANFORD_2010_NS
 from s4d_tools.parsers.stanford_2010.utils import get_text
-
-
-def _safe_int(value: Optional[str]) -> Optional[int]:
-    if value is None or str(value).strip() == "":
-        return None
-    try:
-        return int(float(str(value).strip()))
-    except ValueError:
-        return None
+from s4d_tools.utils.numeric_utils import safe_int
 
 
 def _product_class_upper_maps(
@@ -36,10 +28,10 @@ def _product_class_upper_maps(
             lows = [
                 v
                 for dc in dclasses.findall("s:DiameterClass", ns)
-                if (v := _safe_int(get_text(dc, "s:DiameterClassLowerLimit"))) is not None
+                if (v := safe_int(get_text(dc, "s:DiameterClassLowerLimit"))) is not None
             ]
             dmax_el = dclasses.find("s:DiameterClassMAX", ns)
-            dmax = _safe_int(dmax_el.text) if dmax_el is not None else None
+            dmax = safe_int(dmax_el.text) if dmax_el is not None else None
             lows = sorted(set(lows))
             for i, lo in enumerate(lows):
                 d_map[lo] = lows[i + 1] if i + 1 < len(lows) else (dmax if dmax is not None else lo)
@@ -49,10 +41,10 @@ def _product_class_upper_maps(
         lows = [
             v
             for lc in ldef.findall("s:LengthClass", ns)
-            if (v := _safe_int(get_text(lc, "s:LengthClassLowerLimit"))) is not None
+            if (v := safe_int(get_text(lc, "s:LengthClassLowerLimit"))) is not None
         ]
         lmax_el = ldef.find("s:LengthClassMAX", ns)
-        lmax = _safe_int(lmax_el.text) if lmax_el is not None else None
+        lmax = safe_int(lmax_el.text) if lmax_el is not None else None
         lows = sorted(set(lows))
         for i, lo in enumerate(lows):
             l_map[lo] = lows[i + 1] if i + 1 < len(lows) else (lmax if lmax is not None else lo)
@@ -119,8 +111,8 @@ class PINParser:
             for matrix_item in product_matrix_items:
                 diameter_class_lower_limit = matrix_item.attrib.get('diameterClassLowerLimit')
                 length_class_lower_limit = matrix_item.attrib.get('lengthClassLowerLimit')
-                d_lo = _safe_int(diameter_class_lower_limit)
-                l_lo = _safe_int(length_class_lower_limit)
+                d_lo = safe_int(diameter_class_lower_limit)
+                l_lo = safe_int(length_class_lower_limit)
                 d_upper = d_lim_by_lower.get(d_lo, d_lo) if d_lo is not None else None
                 l_upper = l_lim_by_lower.get(l_lo, l_lo) if l_lo is not None else None
 

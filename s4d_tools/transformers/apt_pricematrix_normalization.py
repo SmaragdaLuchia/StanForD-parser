@@ -108,46 +108,24 @@ def build_relative_price_longform(rows: Union[List[Dict[str, Any]], pd.DataFrame
 
 
 def price_matrix_from_any_apt_shape(
-    apt_parse_result: Union[Dict[str, Any], pd.DataFrame, None],
+    apt_parse_result: Union[Dict[str, Any], None],
 ) -> pd.DataFrame:
     """
-    Normalize common APT parse output shapes into standardized long-form matrix rows.
+    Normalize APT parse output into standardized long-form matrix rows.
+
+    APTParser.parse() returns: {"price_matrix": {classic APT matrix dict}}
     """
     if apt_parse_result is None:
         return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
-    if isinstance(apt_parse_result, pd.DataFrame):
-        return build_relative_price_longform(apt_parse_result)
+    price_matrix = apt_parse_result.get("price_matrix")
+    if price_matrix is None:
+        return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
-    if isinstance(apt_parse_result, dict):
-        if "fields" in apt_parse_result and isinstance(apt_parse_result["fields"], dict):
-            inner = apt_parse_result["fields"].get("price_matrix")
-            if isinstance(inner, pd.DataFrame):
-                return build_relative_price_longform(inner)
-            if isinstance(inner, list):
-                return build_relative_price_longform(inner)
-            if isinstance(inner, dict) and _is_classic_apt_price_matrix_dict(inner):
-                return expand_classic_apt_price_matrix(inner)
-            if isinstance(inner, dict):
-                return build_relative_price_longform([inner])
+    if _is_classic_apt_price_matrix_dict(price_matrix):
+        return expand_classic_apt_price_matrix(price_matrix)
 
-        if "price_matrix" in apt_parse_result:
-            value = apt_parse_result["price_matrix"]
-            if value is None:
-                pass
-            elif isinstance(value, pd.DataFrame):
-                return build_relative_price_longform(value)
-            elif isinstance(value, list):
-                return build_relative_price_longform(value)
-            elif isinstance(value, dict) and _is_classic_apt_price_matrix_dict(value):
-                return expand_classic_apt_price_matrix(value)
-            elif isinstance(value, dict):
-                return build_relative_price_longform([value])
-
-        if _is_classic_apt_price_matrix_dict(apt_parse_result):
-            return expand_classic_apt_price_matrix(apt_parse_result)
-
-        return build_relative_price_longform(apt_parse_result)
+    return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
 
 __all__ = [

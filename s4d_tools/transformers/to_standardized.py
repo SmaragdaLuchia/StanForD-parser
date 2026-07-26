@@ -202,35 +202,37 @@ def transform_prd_to_standardized(
     prd_data: Dict[str, pd.DataFrame],
     apt_parse_result: Optional[Union[Dict[str, Any], pd.DataFrame]] = None,
 ) -> Dict[str, Any]:
-    apt_df = _standardized_price_matrix(apt_parse_result)
+    out = empty_standardized_report(SOURCE_TYPE_CLASSIC_PRD, False)
+
+    out["header"] = _format_table(prd_data, "header", STANDARDIZED_HEADER_COLUMNS)
+    out["machine"] = _format_table(prd_data, "machine", STANDARDIZED_MACHINE_COLUMNS)
+    out["objects"] = _format_table(prd_data, "objects", STANDARDIZED_OBJECTS_COLUMNS)
+
     species_groups = _format_table(prd_data, "species_groups", STANDARDIZED_SPECIES_GROUPS_COLUMNS)
+    out["species_groups"] = species_groups
+    out["products"] = _format_table(prd_data, "products", STANDARDIZED_PRODUCTS_COLUMNS)
+
     statistics = _format_table(prd_data, "statistics", STANDARDIZED_STATISTICS_COLUMNS)
-    return {
-        "header": _format_table(prd_data, "header", STANDARDIZED_HEADER_COLUMNS),
-        "machine": _format_table(prd_data, "machine", STANDARDIZED_MACHINE_COLUMNS),
-        "objects": _format_table(prd_data, "objects", STANDARDIZED_OBJECTS_COLUMNS),
-        "species_groups": species_groups,
-        "products": _format_table(prd_data, "products", STANDARDIZED_PRODUCTS_COLUMNS),
-        "statistics": statistics,
-        "species_table": _ensure_columns(
-            _build_species_table(species_groups, statistics),
-            STANDARDIZED_SPECIES_TABLE_COLUMNS,
-        ),
-        "species_product_volume": empty_standardized_table(
-            STANDARDIZED_SPECIES_PRODUCT_VOLUME_COLUMNS
-        ),
-        "stems": empty_standardized_table(STANDARDIZED_STEMS_COLUMNS),
-        "logs": pd.DataFrame(),
-        "price_matrix": apt_df,
-        META_SOURCE_TYPE: SOURCE_TYPE_CLASSIC_PRD,
-        META_HAS_PRI: False,
-    }
+    out["statistics"] = statistics
+    out["species_table"] = _ensure_columns(
+        _build_species_table(species_groups, statistics),
+        STANDARDIZED_SPECIES_TABLE_COLUMNS,
+    )
+
+    out["price_matrix"] = _standardized_price_matrix(apt_parse_result)
+
+    return out
 
 
 def transform_hpr_to_standardized(
     hpr_data: Dict[str, pd.DataFrame],
     apt_parse_result: Optional[Union[Dict[str, Any], pd.DataFrame]] = None,
 ) -> Dict[str, Any]:
+    out = empty_standardized_report(SOURCE_TYPE_2010_HPR, False)
+
+    out["header"] = _format_table(hpr_data, "header", STANDARDIZED_HEADER_COLUMNS)
+    out["machine"] = _format_table(hpr_data, "machine", STANDARDIZED_MACHINE_COLUMNS)
+
     objects_df = hpr_data.get("objects", pd.DataFrame())
     if not objects_df.empty:
         ob = objects_df.copy()
@@ -238,9 +240,19 @@ def transform_hpr_to_standardized(
             ob["object_name"] = ob.get("sub_object_name", "")
         if "contract_number" not in ob.columns:
             ob["contract_number"] = ""
-        objects_out = _ensure_columns(ob, STANDARDIZED_OBJECTS_COLUMNS)
-    else:
-        objects_out = empty_standardized_table(STANDARDIZED_OBJECTS_COLUMNS)
+        out["objects"] = _ensure_columns(ob, STANDARDIZED_OBJECTS_COLUMNS)
+
+    species_groups = _format_table(hpr_data, "species_groups", STANDARDIZED_SPECIES_GROUPS_COLUMNS)
+    out["species_groups"] = species_groups
+    out["products"] = _format_table(hpr_data, "products", STANDARDIZED_PRODUCTS_COLUMNS)
+
+    statistics = _compute_hpr_statistics(hpr_data)
+    statistics = _ensure_columns(statistics, STANDARDIZED_STATISTICS_COLUMNS)
+    out["statistics"] = statistics
+    out["species_table"] = _ensure_columns(
+        _build_species_table(species_groups, statistics),
+        STANDARDIZED_SPECIES_TABLE_COLUMNS,
+    )
 
     stems = hpr_data.get("stems", pd.DataFrame())
     if not stems.empty:
@@ -248,35 +260,12 @@ def transform_hpr_to_standardized(
         extra = [c for c in stems.columns if c not in STANDARDIZED_STEMS_COLUMNS]
         if extra:
             stems_out = pd.concat([stems_out, stems[extra]], axis=1)
-    else:
-        stems_out = empty_standardized_table(STANDARDIZED_STEMS_COLUMNS)
+        out["stems"] = stems_out
 
-    statistics = _compute_hpr_statistics(hpr_data)
-    statistics = _ensure_columns(statistics, STANDARDIZED_STATISTICS_COLUMNS)
+    out["logs"] = hpr_data.get("logs", pd.DataFrame()).copy() if not hpr_data.get("logs", pd.DataFrame()).empty else pd.DataFrame()
+    out["price_matrix"] = _standardized_price_matrix(apt_parse_result)
 
-    apt_df = _standardized_price_matrix(apt_parse_result)
-
-    species_groups = _format_table(hpr_data, "species_groups", STANDARDIZED_SPECIES_GROUPS_COLUMNS)
-    return {
-        "header": _format_table(hpr_data, "header", STANDARDIZED_HEADER_COLUMNS),
-        "machine": _format_table(hpr_data, "machine", STANDARDIZED_MACHINE_COLUMNS),
-        "objects": objects_out,
-        "species_groups": species_groups,
-        "products": _format_table(hpr_data, "products", STANDARDIZED_PRODUCTS_COLUMNS),
-        "statistics": statistics,
-        "species_table": _ensure_columns(
-            _build_species_table(species_groups, statistics),
-            STANDARDIZED_SPECIES_TABLE_COLUMNS,
-        ),
-        "species_product_volume": empty_standardized_table(
-            STANDARDIZED_SPECIES_PRODUCT_VOLUME_COLUMNS
-        ),
-        "stems": stems_out,
-        "logs": hpr_data.get("logs", pd.DataFrame()).copy() if not hpr_data.get("logs", pd.DataFrame()).empty else pd.DataFrame(),
-        "price_matrix": apt_df,
-        META_SOURCE_TYPE: SOURCE_TYPE_2010_HPR,
-        META_HAS_PRI: False,
-    }
+    return out
 
 
 def transform_pin_to_standardized(
