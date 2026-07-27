@@ -2,29 +2,15 @@ from __future__ import annotations
 
 from typing import Any, Dict, Tuple, Union
 
+from .stanford_classic_base import _StanfordClassicParser
 from .utils.helpers import (
-    get_value,
-    load_raw_data,
     normalize_value,
     parse_list,
     parse_multiline_list,
 )
 
 
-class APTParser:
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self._raw_data = None
-
-    def _load_raw_data(self):
-        if self._raw_data is None:
-            self._raw_data = load_raw_data(self.file_path, merge_duplicate_keys=True)
-        return self._raw_data
-
-    def _get_value(self, group_id, variable_id, default=None):
-        if self._raw_data is None:
-            self._load_raw_data()
-        return get_value(self._raw_data, group_id, variable_id, default)
+class APTParser(_StanfordClassicParser):
 
     def parse_raw_blocks(self) -> Dict[Tuple[int, int], str]:
         self._load_raw_data()
