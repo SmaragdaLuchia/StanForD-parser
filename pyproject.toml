@@ -40,8 +40,9 @@ dev = [
 [project.urls]
 Documentation = "https://smaragdaluchia.github.io/s4d_tools/#/"
 
-[tool.setuptools]
-packages = ["s4d_tools"]
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["s4d_tools*"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
