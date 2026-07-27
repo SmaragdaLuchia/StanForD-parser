@@ -100,7 +100,7 @@ print(report["species_table"])`}
       />
       <ConsoleOutput>
         {`stanford_2010_hpr | has PRI: False
-  species_name  trees  volume_m3
+  species_name  stems  volume_m3
 0            1      1        0.0`}
       </ConsoleOutput>
       <p>
