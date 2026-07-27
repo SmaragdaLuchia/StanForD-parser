@@ -1,29 +1,15 @@
 import pandas as pd
 from s4d_tools.utils.date_utils import format_date
 
+from .stanford_classic_base import _StanfordClassicParser
 from .utils.helpers import (
-    get_value,
-    load_raw_data,
     normalize_value,
     parse_list,
     parse_multiline_list,
 )
 
 
-class PRDParser:
-    def __init__(self, file_path):
-        self.file_path = file_path
-        self._raw_data = None
-
-    def _load_raw_data(self):
-        if self._raw_data is None:
-            self._raw_data = load_raw_data(self.file_path, merge_duplicate_keys=True)
-        return self._raw_data
-
-    def _get_value(self, group_id, variable_id, default=None):
-        if self._raw_data is None:
-            self._load_raw_data()
-        return get_value(self._raw_data, group_id, variable_id, default)
+class PRDParser(_StanfordClassicParser):
 
     def _parse_header(self):
         header_data = []
@@ -31,7 +17,7 @@ class PRDParser:
         creation_date_raw = normalize_value(self._get_value(11, 4, ''), list_join="\n")
         modification_date_raw = normalize_value(self._get_value(12, 4, ''), list_join="\n")
         application_version_created = normalize_value(self._get_value(2, 2, ''), list_join="\n")
-        application_version_modified = normalize_value(self._get_value(2, 2, ''), list_join="\n")
+        application_version_modified = normalize_value(self._get_value(2, 3, ''), list_join="\n")
 
         creation_date = format_date(creation_date_raw) if creation_date_raw else ''
         modification_date = format_date(modification_date_raw) if modification_date_raw else ''
@@ -63,11 +49,10 @@ class PRDParser:
 
         contract_id = normalize_value(self._get_value(21, 1, ''), list_join="\n")
         sub_object_name = normalize_value(self._get_value(21, 3, ''), list_join="\n")
-        site_name = sub_object_name.split(' ')[0]
 
         objects_data.append({
             'contract_number': contract_id,
-            'object_name': site_name
+            'object_name': sub_object_name
         })
 
         return pd.DataFrame(objects_data)

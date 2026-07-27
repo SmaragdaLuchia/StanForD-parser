@@ -131,7 +131,7 @@ def price_matrix_from_any_apt_shape(
     if _is_classic_apt_price_matrix_dict(price_matrix):
         return expand_classic_apt_price_matrix(price_matrix)
 
-   if isinstance(price_matrix, list):
+    if isinstance(price_matrix, list):
         return build_relative_price_longform(price_matrix)
 
     return pd.DataFrame(columns=_standardized_price_matrix_columns())

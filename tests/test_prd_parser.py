@@ -85,7 +85,7 @@ class TestPRDParser:
         
         row = objects_df.iloc[0]
         assert row['contract_number'] == '9999'
-        assert row['object_name'] == 'ToySite'
+        assert row['object_name'] == 'ToySite 1'
     
     def test_parse_species_groups(self, sample_prd_file):
         parser = PRDParser(sample_prd_file)
