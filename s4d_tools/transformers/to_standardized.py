@@ -358,9 +358,6 @@ def merge_pri_into_standardized(
             result["logs"] = pri_logs
         else:
             result["logs_pri"] = pri_logs
-    else:
-        if "logs_pri" in result:
-            del result["logs_pri"]
 
     return result
 
