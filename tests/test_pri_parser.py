@@ -51,7 +51,7 @@ class TestPRIParser:
             assert col in header_df.columns
         
         row = header_df.iloc[0]
-        assert row['creation_date'] == '20240601080000'
+        assert row['creation_date'] == '01-06-2024 08:00'
         assert row['modification_date'] == ''
         assert row['valid_from_date'] == ''
         assert row['start_date'] == ''

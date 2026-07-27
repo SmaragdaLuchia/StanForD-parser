@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 
+from s4d_tools.utils.date_utils import format_date
 from s4d_tools.utils.numeric_utils import safe_int, safe_float
 from .constants import PRI_LOG_CODES
 from .stanford_classic_base import _StanfordClassicParser
@@ -11,21 +12,21 @@ class PRIParser(_StanfordClassicParser):
 
     def _parse_header(self):
         header_data = []
-        
-        creation_date = self._get_value(11, 4, '')
-        modification_date = self._get_value(12, 4, '')
-        valid_from_date = self._get_value(13, 4, '')
-        start_date = self._get_value(16, 4, '')
+
+        creation_date_raw = self._get_value(11, 4, '')
+        modification_date_raw = self._get_value(12, 4, '')
+        valid_from_date_raw = self._get_value(13, 4, '')
+        start_date_raw = self._get_value(16, 4, '')
         application_version_created = self._get_value(5, 1, '')
 
         header_data.append({
-            'creation_date': creation_date,
-            'modification_date': modification_date,
-            'valid_from_date': valid_from_date,
-            'start_date': start_date,
+            'creation_date': format_date(creation_date_raw) if creation_date_raw else '',
+            'modification_date': format_date(modification_date_raw) if modification_date_raw else '',
+            'valid_from_date': format_date(valid_from_date_raw) if valid_from_date_raw else '',
+            'start_date': format_date(start_date_raw) if start_date_raw else '',
             'application_version_created': application_version_created
         })
-        
+
         return pd.DataFrame(header_data)
 
     def _parse_machine(self):
