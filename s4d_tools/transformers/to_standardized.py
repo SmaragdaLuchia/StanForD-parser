@@ -351,9 +351,18 @@ def merge_pri_into_standardized(
         if key in standardized:
             result[key] = standardized[key].copy() if standardized[key] is not None else standardized[key]
 
-    result["header"] = _merge_first_row(result["header"], pri_data.get("header", pd.DataFrame()))
-    result["machine"] = _merge_first_row(result["machine"], pri_data.get("machine", pd.DataFrame()))
-    result["objects"] = _merge_first_row(result["objects"], pri_data.get("objects", pd.DataFrame()))
+    result["header"] = _ensure_columns(
+        _merge_first_row(result["header"], pri_data.get("header", pd.DataFrame())),
+        STANDARDIZED_HEADER_COLUMNS
+    )
+    result["machine"] = _ensure_columns(
+        _merge_first_row(result["machine"], pri_data.get("machine", pd.DataFrame())),
+        STANDARDIZED_MACHINE_COLUMNS
+    )
+    result["objects"] = _ensure_columns(
+        _merge_first_row(result["objects"], pri_data.get("objects", pd.DataFrame())),
+        STANDARDIZED_OBJECTS_COLUMNS
+    )
 
     if not pri_data.get("logs", pd.DataFrame()).empty:
         pri_logs_in = pri_data["logs"].copy()
