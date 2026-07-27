@@ -16,6 +16,7 @@ from .standardized_schema import (
     STANDARDIZED_SPECIES_TABLE_COLUMNS,
     STANDARDIZED_SPECIES_PRODUCT_VOLUME_COLUMNS,
     STANDARDIZED_STEMS_COLUMNS,
+    STANDARDIZED_LOGS_COLUMNS,
     META_HAS_PRI,
     META_SOURCE_TYPE,
     SOURCE_TYPE_CLASSIC_APT,
@@ -262,7 +263,14 @@ def transform_hpr_to_standardized(
             stems_out = pd.concat([stems_out, stems[extra]], axis=1)
         out["stems"] = stems_out
 
-    out["logs"] = hpr_data.get("logs", pd.DataFrame()).copy() if not hpr_data.get("logs", pd.DataFrame()).empty else pd.DataFrame()
+    logs = hpr_data.get("logs", pd.DataFrame())
+    if not logs.empty:
+        logs_out = _ensure_columns(logs.copy(), STANDARDIZED_LOGS_COLUMNS)
+        extra = [c for c in logs.columns if c not in STANDARDIZED_LOGS_COLUMNS]
+        if extra:
+            logs_out = pd.concat([logs_out, logs[extra]], axis=1)
+        out["logs"] = logs_out
+
     out["price_matrix"] = _standardized_price_matrix(apt_parse_result)
 
     return out
@@ -348,16 +356,21 @@ def merge_pri_into_standardized(
     result["objects"] = _merge_first_row(result["objects"], pri_data.get("objects", pd.DataFrame()))
 
     if not pri_data.get("logs", pd.DataFrame()).empty:
-        pri_logs = pri_data["logs"].copy()
+        pri_logs_in = pri_data["logs"].copy()
+        pri_logs_out = _ensure_columns(pri_logs_in, STANDARDIZED_LOGS_COLUMNS)
+        extra = [c for c in pri_logs_in.columns if c not in STANDARDIZED_LOGS_COLUMNS]
+        if extra:
+            pri_logs_out = pd.concat([pri_logs_out, pri_logs_in[extra]], axis=1)
+
         result["species_product_volume"] = _build_species_product_volume_from_pri_logs(
-            pri_logs,
+            pri_logs_out,
             result.get("species_groups", pd.DataFrame()),
             result.get("products", pd.DataFrame()),
         )
         if result["logs"].empty:
-            result["logs"] = pri_logs
+            result["logs"] = pri_logs_out
         else:
-            result["logs_pri"] = pri_logs
+            result["logs_pri"] = pri_logs_out
 
     return result
 
