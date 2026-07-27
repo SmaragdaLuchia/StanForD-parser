@@ -1,7 +1,7 @@
 import pandas as pd
 import numpy as np
 
-from s4d_tools.utils.numeric_utils import safe_int
+from s4d_tools.utils.numeric_utils import safe_int, safe_float
 from .constants import PRI_LOG_CODES
 from .stanford_classic_base import _StanfordClassicParser
 from .utils.helpers import parse_list, parse_multiline_list
@@ -311,8 +311,10 @@ class PRIParser(_StanfordClassicParser):
         total_logs_site = self._get_value(290, 2, '0')
 
         distance_covered = self._get_value(258, 1, '0')
+        if isinstance(distance_covered, list):
+            distance_covered = distance_covered[0] if distance_covered else '0'
         distance_per_operator = parse_list(self._get_value(258, 2, ''))
-        
+
         statistics_data.append({
             'num_stems': safe_int(num_stems, 0),
             'total_stems_site': safe_int(total_stems_site, 0),
@@ -326,7 +328,7 @@ class PRIParser(_StanfordClassicParser):
             'num_log_bunches': safe_int(num_log_bunches, 0),
             'num_logs': safe_int(num_logs, 0),
             'total_logs_site': safe_int(total_logs_site, 0),
-            'distance_covered_km': float(distance_covered) if distance_covered.replace('.', '').isdigit() else 0.0,
+            'distance_covered_km': safe_float(distance_covered, 0.0),
             'distance_per_operator_km': distance_per_operator
         })
         

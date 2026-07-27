@@ -27,6 +27,7 @@ def aggregate_stems_by_species(
         species_groups is not None
         and not species_groups.empty
         and "species_group_key" in species_groups.columns
+        and "species_group_name" in species_groups.columns
     ):
         sg = species_groups[["species_group_key", "species_group_name"]].drop_duplicates(
             subset=["species_group_key"], keep="first"

@@ -118,12 +118,21 @@ def price_matrix_from_any_apt_shape(
     if apt_parse_result is None:
         return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
+    if isinstance(apt_parse_result, (list, pd.DataFrame)):
+        return build_relative_price_longform(apt_parse_result)
+
+    if not isinstance(apt_parse_result, dict):
+        return pd.DataFrame(columns=_standardized_price_matrix_columns())
+
     price_matrix = apt_parse_result.get("price_matrix")
     if price_matrix is None:
         return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
     if _is_classic_apt_price_matrix_dict(price_matrix):
         return expand_classic_apt_price_matrix(price_matrix)
+
+   if isinstance(price_matrix, list):
+        return build_relative_price_longform(price_matrix)
 
     return pd.DataFrame(columns=_standardized_price_matrix_columns())
 
