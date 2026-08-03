@@ -372,7 +372,7 @@ def merge_pri_into_standardized(
             pri_logs_out = pd.concat([pri_logs_out, pri_logs_in[extra]], axis=1)
 
         result["species_product_volume"] = _build_species_product_volume_from_pri_logs(
-            pri_logs_out,
+            pri_logs_in,
             result.get("species_groups", pd.DataFrame()),
             result.get("products", pd.DataFrame()),
         )

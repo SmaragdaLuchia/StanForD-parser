@@ -118,7 +118,7 @@ class HPRParser:
             
             # Parse BarkFunction
             bark_function_category = get_attrib(species_group, 's:BarkFunction', 'barkFunctionCategory')
-            swedish_zacco = bark_function.find('s:SwedishZacco', self.ns) if bark_function is not None else None
+            swedish_zacco = species_group.find('s:BarkFunction/s:SwedishZacco', self.ns)
             constant_a = get_text(swedish_zacco, 's:ConstantA')
             factor_b = get_text(swedish_zacco, 's:FactorB')
             

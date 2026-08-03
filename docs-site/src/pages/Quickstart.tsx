@@ -4,6 +4,7 @@ import CodeBlock from "../components/CodeBlock";
 
 const TOC: TocItem[] = [
   { id: "install", label: "Install" },
+  { id: "samples", label: "Sample files" },
   { id: "step-1", label: "1 · Parse" },
   { id: "step-2", label: "2 · Standardize" },
   { id: "step-3", label: "3 · Aggregate" },
@@ -53,6 +54,23 @@ export default function Quickstart() {
       </p>
       <CodeBlock terminal code="pip install s4d_tools" />
 
+      <h2 id="samples">Sample files</h2>
+      <p>
+        Don't have harvester files at hand? Download a folder of minimal,
+        hand-crafted sample files — one per supported format, all describing
+        the same small harvest (site <em>SampleSite&nbsp;1</em>, two species,
+        four products, five stems). Together they exercise every parser,
+        transformer, and aggregator in the library.
+      </p>
+      <p>
+        <a
+          href="samples/s4d-tools-samples.zip"
+          download
+          className="inline-flex items-center gap-2 rounded-lg bg-pine px-4 py-2 text-sm font-medium !text-white no-underline hover:bg-pine-dark"
+        >
+          <span aria-hidden="true">⬇</span> Download sample files (.zip)
+        </a>
+      </p>
       <StepHeading id="step-1" n={1}>
         Parse the file
       </StepHeading>
@@ -62,22 +80,31 @@ export default function Quickstart() {
         <code>PRDParser</code> / <code>PRIParser</code> /{" "}
         <code>APTParser</code> for StanForD Classic text files. Every parser
         returns a dict of pandas DataFrames, one per section of the file. The
-        examples below use the minimal <code>toy_test.hpr</code> fixture from
-        the repository's test suite — substitute your own file path.
+        examples below use the downloadable{" "}
+        <a href="#samples">sample files</a> — substitute your own file paths.
       </p>
       <CodeBlock
         title="quickstart.py"
         code={`from s4d_tools import HPRParser
 
-raw = HPRParser("tests/fixtures/toy_test.hpr").parse()
+raw = HPRParser("s4d-tools-samples/sample.hpr").parse()
 
 print(list(raw.keys()))
 print(raw["logs"][["stem_key", "log_key", "product_key", "volume_sub_m3", "length_cm"]])`}
       />
       <ConsoleOutput>
         {`['header', 'machine', 'species_groups', 'products', 'objects', 'stems', 'logs']
-   stem_key log_key product_key volume_sub_m3 length_cm
-0  STEM_001       1           1         0.150        450`}
+  stem_key log_key product_key volume_sub_m3 length_cm
+0        1       1           1         0.410       430
+1        1       2           2         0.108       310
+2        2       1           1         0.474       460
+3        2       2           2         0.099       340
+4        3       1           1         0.528       490
+5        3       2           2         0.081       310
+6        4       1           3         0.377       430
+7        4       2           4         0.092       310
+8        5       1           3         0.442       460
+9        5       2           4         0.105       340`}
       </ConsoleOutput>
 
       <StepHeading id="step-2" n={2}>
@@ -101,7 +128,8 @@ print(report["species_table"])`}
       <ConsoleOutput>
         {`stanford_2010_hpr | has PRI: False
   species_name  stems  volume_m3
-0            1      1        0.0`}
+0         Pine      3      1.870
+1       Spruce      2      1.105`}
       </ConsoleOutput>
       <p>
         For Classic files the flow is identical — parse with{" "}
@@ -118,10 +146,10 @@ from s4d_tools.transformers import (
 )
 
 report = transform_prd_to_standardized(
-    PRDParser("data/production.prd").parse(),
-    apt_parse_result=APTParser("data/instructions.apt").parse(),
+    PRDParser("s4d-tools-samples/sample.prd").parse(),
+    apt_parse_result=APTParser("s4d-tools-samples/sample.apt").parse(),
 )
-report = merge_pri_into_standardized(report, PRIParser("data/production.pri").parse())`}
+report = merge_pri_into_standardized(report, PRIParser("s4d-tools-samples/sample.pri").parse())`}
       />
 
       <StepHeading id="step-3" n={3}>
@@ -150,15 +178,14 @@ print(volumes)`}
       />
       <ConsoleOutput>
         {`  species_name  stem_count
-0            1           1
-  species_name product_name  volume
-0            1            1       0`}
+0         Pine           3
+1       Spruce           2
+  species_name     product_name  volume_m3
+0         Pine      Pine Sawlog      1.550
+1         Pine    Pine Pulpwood      0.320
+2       Spruce    Spruce Sawlog      0.890
+3       Spruce  Spruce Pulpwood      0.215`}
       </ConsoleOutput>
-      <p>
-        (The toy fixture has a single unnamed species and one log without a
-        bark-on volume; a real <code>.hpr</code> file yields one row per
-        species and product with summed volumes.)
-      </p>
 
       <h2 id="next">Next steps</h2>
       <ul>

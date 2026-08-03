@@ -13,6 +13,7 @@ export const SEARCH_INDEX: SearchEntry[] = [
   { title: "Standardizing layer", path: "/pipeline", keywords: "standardize transformers schema iso timestamps machine id" },
   { title: "Aggregating layer", path: "/pipeline", keywords: "aggregate volume fleet productivity reports summaries" },
   { title: "Quickstart", path: "/quickstart", keywords: "quickstart install pip pipeline parse standardize aggregate tutorial" },
+  { title: "Sample files — download toy HPR, PIN, PRD, PRI, APT", path: "/quickstart", keywords: "sample files download zip example test data toy hpr pin prd pri apt try it out quickstart" },
   { title: "API Reference", path: "/api", keywords: "api classes functions methods reference parser transformer aggregator" },
   { title: "Parsers — HPRParser, PRDParser, PRIParser, APTParser, PINParser", path: "/api", keywords: "HPRParser PRDParser PRIParser APTParser PINParser parse hpr prd pri apt pin stanford classic 2010 api" },
   { title: "Transformers — standardized report", path: "/api", keywords: "transform_hpr_to_standardized transform_prd_to_standardized merge_pri_into_standardized merge_pin_into_standardized merge_apt_into_standardized standardized report source_type has_pri api transformers" },

@@ -1,0 +1,494 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HarvestedProduction xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" messageType="hpr" areaUnit="ha" diameterUnit="mm" lengthUnit="cm" volumeUnit="m3" weightUnit="kg" version="3.3" versionDate="2017-02-06" xmlns="urn:skogforsk:stanford2010">
+  <HarvestedProductionHeader>
+    <CreationDate>2024-06-01T08:00:00+03:00</CreationDate>
+    <ModificationDate>2024-06-01T16:00:00+03:00</ModificationDate>
+    <ApplicationVersionCreated>SampleMaker 1.0</ApplicationVersionCreated>
+    <ApplicationVersionModified>SampleMaker 1.0</ApplicationVersionModified>
+    <CountryCode>233</CountryCode>
+  </HarvestedProductionHeader>
+  <Machine machineCategory="Harvester">
+    <MachineKey>1</MachineKey>
+    <MachineUserID>SAMPLE_MACHINE_01</MachineUserID>
+    <MachineOwnerID>SAMPLE_OWNER_01</MachineOwnerID>
+    <MachineApplicationVersion>SampleControl 4.2</MachineApplicationVersion>
+    <MachineBaseManufacturer>SampleFactory</MachineBaseManufacturer>
+    <MachineBaseModel>SF-1000</MachineBaseModel>
+    <BaseMachineManufacturerID>SF</BaseMachineManufacturerID>
+    <MachineHeadManufacturer>SampleHead</MachineHeadManufacturer>
+    <MachineHeadModel>SH-500</MachineHeadModel>
+    <MachineOwner>
+      <BusinessName>Sample Forestry Ltd</BusinessName>
+      <Address>
+        <Street>Sample Street 1</Street>
+        <City>Sampleville</City>
+      </Address>
+    </MachineOwner>
+    <LoggingContractor>
+      <BusinessName>Sample Logging Ltd</BusinessName>
+    </LoggingContractor>
+    <OperatorDefinition>
+      <OperatorKey>1</OperatorKey>
+      <OperatorUserID>OP-01</OperatorUserID>
+      <ContactInformation>
+        <FirstName>Sam</FirstName>
+        <LastName>Sample</LastName>
+      </ContactInformation>
+    </OperatorDefinition>
+    <SpeciesGroupDefinition>
+      <SpeciesGroupKey>1</SpeciesGroupKey>
+      <SpeciesGroupUserID agency="Sample">PINE</SpeciesGroupUserID>
+      <SpeciesGroupName>Pine</SpeciesGroupName>
+      <SpeciesGroupInfo>Scots pine</SpeciesGroupInfo>
+      <SpeciesGroupVersion>1</SpeciesGroupVersion>
+      <SpeciesGroupModificationDate>2024-05-01T12:00:00+03:00</SpeciesGroupModificationDate>
+      <SpeciesGroupPresentationOrder>1</SpeciesGroupPresentationOrder>
+      <DBHHeight>130</DBHHeight>
+      <Grades>
+        <StartGrade>1</StartGrade>
+        <MTHStartGrade>1</MTHStartGrade>
+      </Grades>
+      <BarkFunction barkFunctionCategory="Swedish Zacco">
+        <SwedishZacco>
+          <ConstantA>1.20</ConstantA>
+          <FactorB>0.03</FactorB>
+        </SwedishZacco>
+      </BarkFunction>
+    </SpeciesGroupDefinition>
+    <SpeciesGroupDefinition>
+      <SpeciesGroupKey>2</SpeciesGroupKey>
+      <SpeciesGroupUserID agency="Sample">SPRUCE</SpeciesGroupUserID>
+      <SpeciesGroupName>Spruce</SpeciesGroupName>
+      <SpeciesGroupInfo>Norway spruce</SpeciesGroupInfo>
+      <SpeciesGroupVersion>1</SpeciesGroupVersion>
+      <SpeciesGroupModificationDate>2024-05-01T12:00:00+03:00</SpeciesGroupModificationDate>
+      <SpeciesGroupPresentationOrder>2</SpeciesGroupPresentationOrder>
+      <DBHHeight>130</DBHHeight>
+      <Grades>
+        <StartGrade>1</StartGrade>
+        <MTHStartGrade>1</MTHStartGrade>
+      </Grades>
+      <BarkFunction barkFunctionCategory="Swedish Zacco">
+        <SwedishZacco>
+          <ConstantA>1.10</ConstantA>
+          <FactorB>0.02</FactorB>
+        </SwedishZacco>
+      </BarkFunction>
+    </SpeciesGroupDefinition>
+    <ProductDefinition>
+      <ProductKey>1</ProductKey>
+      <ClassifiedProductDefinition>
+        <ProductName>Pine Sawlog</ProductName>
+        <ProductUserID agency="Sample">PS1</ProductUserID>
+        <SpeciesGroupKey>1</SpeciesGroupKey>
+        <ModificationDate>2024-05-01T12:00:00+03:00</ModificationDate>
+      </ClassifiedProductDefinition>
+    </ProductDefinition>
+    <ProductDefinition>
+      <ProductKey>2</ProductKey>
+      <ClassifiedProductDefinition>
+        <ProductName>Pine Pulpwood</ProductName>
+        <ProductUserID agency="Sample">PP1</ProductUserID>
+        <SpeciesGroupKey>1</SpeciesGroupKey>
+        <ModificationDate>2024-05-01T12:00:00+03:00</ModificationDate>
+      </ClassifiedProductDefinition>
+    </ProductDefinition>
+    <ProductDefinition>
+      <ProductKey>3</ProductKey>
+      <ClassifiedProductDefinition>
+        <ProductName>Spruce Sawlog</ProductName>
+        <ProductUserID agency="Sample">SS1</ProductUserID>
+        <SpeciesGroupKey>2</SpeciesGroupKey>
+        <ModificationDate>2024-05-01T12:00:00+03:00</ModificationDate>
+      </ClassifiedProductDefinition>
+    </ProductDefinition>
+    <ProductDefinition>
+      <ProductKey>4</ProductKey>
+      <ClassifiedProductDefinition>
+        <ProductName>Spruce Pulpwood</ProductName>
+        <ProductUserID agency="Sample">SP1</ProductUserID>
+        <SpeciesGroupKey>2</SpeciesGroupKey>
+        <ModificationDate>2024-05-01T12:00:00+03:00</ModificationDate>
+      </ClassifiedProductDefinition>
+    </ProductDefinition>
+    <ObjectDefinition>
+      <ObjectKey>1</ObjectKey>
+      <ObjectUserID agency="Sample">SAMPLE_SITE_01</ObjectUserID>
+      <ObjectName>SampleSite 1</ObjectName>
+      <ObjectModificationDate>2024-05-15T09:00:00+03:00</ObjectModificationDate>
+      <ForestCertification>PEFC</ForestCertification>
+      <ContractNumber ContractCategory="Harvesting">12345</ContractNumber>
+      <RealEstateIDObject>12345:001:0001</RealEstateIDObject>
+      <StartDate>2024-06-01T08:00:00+03:00</StartDate>
+      <EndDate>2024-06-01T16:00:00+03:00</EndDate>
+      <ForestOwner>
+        <Address>
+          <Street>Owner Road 2</Street>
+          <City>Sampleville</City>
+        </Address>
+        <BusinessID>10000001</BusinessID>
+      </ForestOwner>
+      <SubObject>
+        <SubObjectKey>1</SubObjectKey>
+        <SubObjectUserID agency="Sample">SUB_01</SubObjectUserID>
+        <SubObjectName>Stand A</SubObjectName>
+        <RealEstateIDSubObject>12345:001:0001</RealEstateIDSubObject>
+      </SubObject>
+    </ObjectDefinition>
+  </Machine>
+  <Stem>
+    <StemKey>1</StemKey>
+    <ObjectKey>1</ObjectKey>
+    <SubObjectKey>1</SubObjectKey>
+    <SpeciesGroupKey>1</SpeciesGroupKey>
+    <OperatorKey>1</OperatorKey>
+    <HarvestDate>2024-06-01T08:12:00+03:00</HarvestDate>
+    <StemNumber>1</StemNumber>
+    <ProcessingCategory>MultiTreeProcessed</ProcessingCategory>
+    <StumpTreatment>No</StumpTreatment>
+    <StemCoordinates receiverPosition="Base machine position">
+      <Latitude>58.38010</Latitude>
+      <Longitude>26.72200</Longitude>
+      <Altitude>62</Altitude>
+    </StemCoordinates>
+    <Extension>
+      <SessionId>S-1</SessionId>
+      <AnalyzedLength>740</AnalyzedLength>
+    </Extension>
+    <SingleTreeProcessedStem>
+      <DBH>280</DBH>
+      <ReferenceDiameter referenceDiameterHeight="1.3 m">278</ReferenceDiameter>
+      <StemGrade>
+        <GradeValue>1</GradeValue>
+      </StemGrade>
+      <Log>
+        <LogKey>1</LogKey>
+        <ProductKey>1</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.430</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.450</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.410</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>0</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>430</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">260</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">248</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">235</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">224</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">210</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">200</LogDiameter>
+        </LogMeasurement>
+      </Log>
+      <Log>
+        <LogKey>2</LogKey>
+        <ProductKey>2</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.115</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.120</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.108</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>430</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>310</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">200</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">190</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">175</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">166</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">150</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">142</LogDiameter>
+        </LogMeasurement>
+      </Log>
+    </SingleTreeProcessedStem>
+  </Stem>
+  <Stem>
+    <StemKey>2</StemKey>
+    <ObjectKey>1</ObjectKey>
+    <SubObjectKey>1</SubObjectKey>
+    <SpeciesGroupKey>1</SpeciesGroupKey>
+    <OperatorKey>1</OperatorKey>
+    <HarvestDate>2024-06-01T09:05:00+03:00</HarvestDate>
+    <StemNumber>2</StemNumber>
+    <ProcessingCategory>SingleTreeProcessed</ProcessingCategory>
+    <StumpTreatment>No</StumpTreatment>
+    <StemCoordinates receiverPosition="Base machine position">
+      <Latitude>58.38025</Latitude>
+      <Longitude>26.72215</Longitude>
+      <Altitude>63</Altitude>
+    </StemCoordinates>
+    <Extension>
+      <SessionId>S-1</SessionId>
+      <AnalyzedLength>800</AnalyzedLength>
+    </Extension>
+    <SingleTreeProcessedStem>
+      <DBH>310</DBH>
+      <ReferenceDiameter referenceDiameterHeight="1.3 m">306</ReferenceDiameter>
+      <StemGrade>
+        <GradeValue>1</GradeValue>
+      </StemGrade>
+      <Log>
+        <LogKey>1</LogKey>
+        <ProductKey>1</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.500</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.520</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.474</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>0</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>460</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">280</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">266</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">255</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">242</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">230</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">219</LogDiameter>
+        </LogMeasurement>
+      </Log>
+      <Log>
+        <LogKey>2</LogKey>
+        <ProductKey>2</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.105</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.110</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.099</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>460</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>340</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">190</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">181</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">165</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">157</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">140</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">133</LogDiameter>
+        </LogMeasurement>
+      </Log>
+    </SingleTreeProcessedStem>
+  </Stem>
+  <Stem>
+    <StemKey>3</StemKey>
+    <ObjectKey>1</ObjectKey>
+    <SubObjectKey>1</SubObjectKey>
+    <SpeciesGroupKey>1</SpeciesGroupKey>
+    <OperatorKey>1</OperatorKey>
+    <HarvestDate>2024-06-01T10:40:00+03:00</HarvestDate>
+    <StemNumber>3</StemNumber>
+    <ProcessingCategory>SingleTreeProcessed</ProcessingCategory>
+    <StumpTreatment>No</StumpTreatment>
+    <StemCoordinates receiverPosition="Base machine position">
+      <Latitude>58.38041</Latitude>
+      <Longitude>26.72230</Longitude>
+      <Altitude>64</Altitude>
+    </StemCoordinates>
+    <Extension>
+      <SessionId>S-1</SessionId>
+      <AnalyzedLength>810</AnalyzedLength>
+    </Extension>
+    <SingleTreeProcessedStem>
+      <DBH>330</DBH>
+      <ReferenceDiameter referenceDiameterHeight="1.3 m">327</ReferenceDiameter>
+      <StemGrade>
+        <GradeValue>2</GradeValue>
+      </StemGrade>
+      <Log>
+        <LogKey>1</LogKey>
+        <ProductKey>1</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.560</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.580</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.528</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>0</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>490</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">300</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">285</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">270</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">257</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">240</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">228</LogDiameter>
+        </LogMeasurement>
+      </Log>
+      <Log>
+        <LogKey>2</LogKey>
+        <ProductKey>2</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.085</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.090</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.081</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Manual</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>490</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>310</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">180</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">171</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">155</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">147</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">130</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">124</LogDiameter>
+        </LogMeasurement>
+      </Log>
+    </SingleTreeProcessedStem>
+  </Stem>
+  <Stem>
+    <StemKey>4</StemKey>
+    <ObjectKey>1</ObjectKey>
+    <SubObjectKey>1</SubObjectKey>
+    <SpeciesGroupKey>2</SpeciesGroupKey>
+    <OperatorKey>1</OperatorKey>
+    <HarvestDate>2024-06-01T13:15:00+03:00</HarvestDate>
+    <StemNumber>4</StemNumber>
+    <ProcessingCategory>SingleTreeProcessed</ProcessingCategory>
+    <StumpTreatment>Yes</StumpTreatment>
+    <StemCoordinates receiverPosition="Base machine position">
+      <Latitude>58.38058</Latitude>
+      <Longitude>26.72245</Longitude>
+      <Altitude>64</Altitude>
+    </StemCoordinates>
+    <Extension>
+      <SessionId>S-2</SessionId>
+      <AnalyzedLength>750</AnalyzedLength>
+    </Extension>
+    <SingleTreeProcessedStem>
+      <DBH>260</DBH>
+      <ReferenceDiameter referenceDiameterHeight="1.3 m">257</ReferenceDiameter>
+      <StemGrade>
+        <GradeValue>1</GradeValue>
+      </StemGrade>
+      <Log>
+        <LogKey>1</LogKey>
+        <ProductKey>3</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.395</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.410</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.377</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>0</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>430</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">250</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">240</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">225</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">216</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">200</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">192</LogDiameter>
+        </LogMeasurement>
+      </Log>
+      <Log>
+        <LogKey>2</LogKey>
+        <ProductKey>4</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.095</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.100</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.092</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>430</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>310</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">190</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">182</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">165</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">158</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">140</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">134</LogDiameter>
+        </LogMeasurement>
+      </Log>
+    </SingleTreeProcessedStem>
+  </Stem>
+  <Stem>
+    <StemKey>5</StemKey>
+    <ObjectKey>1</ObjectKey>
+    <SubObjectKey>1</SubObjectKey>
+    <SpeciesGroupKey>2</SpeciesGroupKey>
+    <OperatorKey>1</OperatorKey>
+    <HarvestDate>2024-06-01T15:30:00+03:00</HarvestDate>
+    <StemNumber>5</StemNumber>
+    <ProcessingCategory>SingleTreeProcessed</ProcessingCategory>
+    <StumpTreatment>Yes</StumpTreatment>
+    <StemCoordinates receiverPosition="Base machine position">
+      <Latitude>58.38074</Latitude>
+      <Longitude>26.72261</Longitude>
+      <Altitude>65</Altitude>
+    </StemCoordinates>
+    <Extension>
+      <SessionId>S-2</SessionId>
+      <AnalyzedLength>790</AnalyzedLength>
+    </Extension>
+    <SingleTreeProcessedStem>
+      <DBH>290</DBH>
+      <ReferenceDiameter referenceDiameterHeight="1.3 m">288</ReferenceDiameter>
+      <StemGrade>
+        <GradeValue>1</GradeValue>
+      </StemGrade>
+      <Log>
+        <LogKey>1</LogKey>
+        <ProductKey>3</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.465</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.480</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.442</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>0</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>460</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">270</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">259</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">245</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">235</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">220</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">211</LogDiameter>
+        </LogMeasurement>
+      </Log>
+      <Log>
+        <LogKey>2</LogKey>
+        <ProductKey>4</ProductKey>
+        <LogVolume logVolumeCategory="m3 (price)">0.110</LogVolume>
+        <LogVolume logVolumeCategory="m3sob">0.115</LogVolume>
+        <LogVolume logVolumeCategory="m3sub">0.105</LogVolume>
+        <CuttingCategory>
+          <CuttingReason>Automatic</CuttingReason>
+        </CuttingCategory>
+        <Extension>
+          <StartPos>460</StartPos>
+        </Extension>
+        <LogMeasurement>
+          <LogLength>340</LogLength>
+          <LogDiameter logDiameterCategory="Butt ob">200</LogDiameter>
+          <LogDiameter logDiameterCategory="Butt ub">192</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ob">175</LogDiameter>
+          <LogDiameter logDiameterCategory="Mid ub">168</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ob">150</LogDiameter>
+          <LogDiameter logDiameterCategory="Top ub">144</LogDiameter>
+        </LogMeasurement>
+      </Log>
+    </SingleTreeProcessedStem>
+  </Stem>
+</HarvestedProduction>
