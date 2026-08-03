@@ -1,75 +1,122 @@
-# StanForD Parser
+# s4d_tools — StanForD Parser
 
-A web-based visualization tool for analyzing StanForD (Standard for Forest Data) harvester files. This application parses and visualizes data from production (.prd), production-individual (.pri), and harvester production (.hpr) files, providing comprehensive statistics and insights about forest harvesting operations.
+A Python library and web-based visualization tool for analyzing StanForD (Standard for Forest Data) harvester files. `s4d_tools` parses production data from forest harvesters, normalizes every supported format into one standardized report shape, and provides aggregations for analysis — with an optional Streamlit app on top.
+
+**Documentation:** <https://smaragdaluchia.github.io/s4d_tools/#/>
 
 ## Features
 
-- **File Parsing**: Supports multiple StanForD file formats:
-  - `.prd` - Production files
-  - `.pri` - Production-individual files (can be combined with PRD)
-  - `.hpr` - Harvester production files (2010 format)
-- **Interactive Visualization**: Web-based interface built with Streamlit
-- **Comprehensive Analysis**: View statistics, species distribution, product information, machine data, and more
-- **Data Export**: Explore parsed data through interactive tables and charts
+- **File parsing** for both StanForD format families:
+  - `.prd` — production summary (Classic)
+  - `.pri` — production-individual, log-level detail (Classic, combine with PRD)
+  - `.apt` — bucking / price instructions (Classic, adds the relative price matrix)
+  - `.hpr` — harvested production (StanForD 2010 XML)
+  - `.pin` — product instructions (StanForD 2010 XML, adds the price matrix for HPR)
+- **Standardized report**: every format is transformed into the same dict-of-DataFrames schema, so downstream code never cares which file type the data came from
+- **Aggregations**: stems by species, volume by species × product, price-matrix heatmaps, productivity rates
 
-## Setup Instructions
+## Quickstart (use the library)
 
-### Prerequisites
+Full walkthrough with explanations: **<https://smaragdaluchia.github.io/s4d_tools/#/quickstart>**
 
-- Python 3.11 or higher
-- pip (Python package installer)
+### 1. Install
 
-### Step 1: Clone the Repository
+Requires Python 3.11+.
 
 ```bash
-git clone <repository-url>
+pip install s4d-tools
+```
+
+### 2. Get files to test with
+
+No harvester files at hand? Download the sample files — one per supported format, all describing the same small harvest:
+
+**[Download sample files (.zip)](https://smaragdaluchia.github.io/s4d_tools/samples/s4d-tools-samples.zip)**
+
+Extract the archive so the `s4d-tools-samples/` folder sits next to your script.
+
+### 3. Parse, standardize, aggregate
+
+```python
+from s4d_tools import (
+    HPRParser,
+    transform_hpr_to_standardized,
+    aggregate_stems_by_species,
+)
+
+raw = HPRParser("s4d-tools-samples/sample.hpr").parse()
+report = transform_hpr_to_standardized(raw)
+
+print(report["species_table"])
+#   species_name  stems  volume_m3
+# 0         Pine      3      1.870
+# 1       Spruce      2      1.105
+
+print(aggregate_stems_by_species(report["stems"], report["species_groups"]))
+#   species_name  stem_count
+# 0         Pine           3
+# 1       Spruce           2
+```
+
+More recipes — combining PRD + PRI, adding price matrices from APT, exporting to CSV/Excel — are in [EXAMPLE_USAGE.md](EXAMPLE_USAGE.md).
+
+## Development setup (work on the code)
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/SmaragdaLuchia/s4d_tools.git
 cd s4d_tools
 ```
 
-### Step 2: Create a Virtual Environment
-
-It's recommended to use a virtual environment to isolate project dependencies:
+### 2. Create a virtual environment
 
 ```bash
-# Create virtual environment
 python3 -m venv .venv
 
-# Activate virtual environment
 # On macOS/Linux:
 source .venv/bin/activate
 
 # On Windows:
-# venv\Scripts\activate
+# .venv\Scripts\activate
 ```
 
-### Step 3: Install Dependencies
+### 3. Install in editable mode
 
 ```bash
-# Make sure virtual environment is activated
 pip install --upgrade pip
-pip install -r requirements.txt
+pip install -e ".[all]"      # library + Streamlit UI + test dependencies
+# or pick what you need:
+# pip install -e ".[dev]"    # library + pytest
+# pip install -e ".[ui]"     # library + Streamlit UI
 ```
 
-### Step 4: Run the Streamlit Application
+### 4. Run the tests
 
 ```bash
-# Run the main application
-streamlit run streamlit/app.py
-
-# Or run the alternative application
-streamlit run streamlit/app_et.py
+pytest tests/ -v
 ```
 
-The application will start and automatically open in your default web browser at `http://localhost:8501`.
+Test fixtures live in `tests/fixtures/` — they are hand-crafted minimal files, and the parser tests assert exact values against them. The downloadable sample files (`docs-site/public/samples/`) are richer variants meant for trying the library out.
 
-### Step 5: Using the Application
+### 5. Run the Streamlit application
 
-1. Upload a `.prd` or `.hpr` file using the file uploader
-2. Optionally upload a `.pri` file if you have a corresponding PRD file
+```bash
+streamlit run streamlit/app.py       # English UI
+# or
+streamlit run streamlit/app_et.py    # Estonian UI
+```
+
+### Using the application
+
+1. Upload a `.prd` or `.hpr` file (try the sample files from the Quickstart above)
+2. Optionally add a `.pri` file (with PRD) and/or `.apt` / `.pin` files for price matrices
 3. Explore the parsed data through the interactive tabs:
-   - **Overview**: Summary statistics and key metrics
-   - **Basic Info**: File header and object information
-   - **Species**: Species groups and distribution
-   - **Products**: Product information
-   - **Statistics**: Detailed production statistics
-   - **Machine**: Machine information and specifications
+   - **Overview** — summary statistics and key metrics
+   - **Basic Info** — file header and object information
+   - **Species** — species groups and distribution
+   - **Products** — product information
+   - **Statistics** — production statistics and assortment breakdown
+   - **Price matrix** — per-assortment diameter × length matrices (when APT/PIN uploaded)
+   - **Machine / Stems / Logs** — machine specs and row-level data
+4. The **Data redaction (GDPR)** tab produces a copy of a StanForD 2010 XML file with sensitive fields replaced by a placeholder
